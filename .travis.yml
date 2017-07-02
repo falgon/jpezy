@@ -17,7 +17,6 @@ install:
         - sudo add-apt-repository --yes 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise main'
         - sudo add-apt-repository --yes 'deb http://us.archive.ubuntu.com/ubuntu wily main universe'
         - sudo apt-get -qq update
-        - sudo apt-get install build-essential software-properties-common 
         - sudo apt-get -qq install libboost-all-dev
         - sudo apt-get -qq install g++-7
         - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7 \
