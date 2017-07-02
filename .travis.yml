@@ -11,13 +11,10 @@ matrix:
                           - g++-7
                   sources: &sources
                           - ubuntu-toolchain-r-test
-before_install:
-        - bash -c 'echo \"Package: gcc-7\" >> /etc/apt/preferences'
-        - bash -c 'echo \"Pin: release n=zesty\" >> /etc/apt/preferences'
-        - bash -c 'echo \"Pin-Priority: 990\" >> /etc/apt/preferences'
-        - sudo apt-get -qq update
 install:
-        - sudo apt-get install -qq gcc-7
+        - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+        - sudo apt-get -qq update
+        - sudo apt-get -qq install gcc-7
 script:
         - make
         - wget http://www.ece.rice.edu/~wakin/images/lena512color.tiff
