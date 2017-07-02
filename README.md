@@ -66,9 +66,9 @@ Usage: jpezy <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | -
 ## Reference
 * [ITU-T81](https://www.w3.org/Graphics/JPEG/itu-t81.pdf) 
 * [Independent JPEG Group's JPEG software の使い方](https://cetus.sakura.ne.jp/softlab/software2/jpeg6b_usage_j.html)
-* [JPG ファイルフォーマット](http://www.setsuki.com/hsp/ext/jpg.htm](JPG ファイルフォーマット)
+* [JPG ファイルフォーマット](http://www.setsuki.com/hsp/ext/jpg.htm)
 * [JPEG メタデータについて (バイナリを眺めながら)](http://diary.awm.jp/~yoya/data/2015/10/16/JPEGMeta_rev3.pdf)
-* [JPEG-概念からC++での実装まで](https://www.amazon.co.jp/JPEG%E2%80%95%E6%A6%82%E5%BF%B5%E3%81%8B%E3%82%89C-%E3%81%A7%E3%81%AE%E5%AE%9F%E8%A3%85%E3%81%BE%E3%81%A7-%E6%A9%8B%E6%9C%AC-%E6%99%8B%E4%B9%8B%E4%BB%8B/dp/4797330457](JPEG―概念からC++での実装まで)
+* [JPEG-概念からC++での実装まで](https://www.amazon.co.jp/JPEG%E2%80%95%E6%A6%82%E5%BF%B5%E3%81%8B%E3%82%89C-%E3%81%A7%E3%81%AE%E5%AE%9F%E8%A3%85%E3%81%BE%E3%81%A7-%E6%A9%8B%E6%9C%AC-%E6%99%8B%E4%B9%8B%E4%BB%8B/dp/4797330457)
 
 ## License
 [MIT License](https://github.com/falgon/jpezy/blob/master/LICENSE)
