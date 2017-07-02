@@ -4,7 +4,7 @@ compiler: gcc
 matrix:
         include:
                 - os: linux
-                  env: COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5
+                  env: COMPILER_NAME=gcc CXX=g++-7 CC=gcc-7
                   addons:
                   apt:
                   packages:
