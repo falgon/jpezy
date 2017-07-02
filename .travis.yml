@@ -11,7 +11,7 @@ compiler:
         - gcc-7
 install:
         - git clone https://github.com/falgon/SrookCppLibraries.git
-        - mv -r SrookCppLibraries/srook .
+        - mv SrookCppLibraries/srook .
         - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
         - wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
         - sudo add-apt-repository --yes 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise main'
