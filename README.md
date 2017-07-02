@@ -10,6 +10,9 @@
 
 
 ## jpeg + lazy = jpezy
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae48c146f92e4fb088116091727440ad)](https://www.codacy.com/app/falgon/jpezy?utm_source=github.com&utm_medium=referral&utm_content=falgon/jpezy&utm_campaign=badger)
+
 The lazy and simply JPEG encoder implementation. This project is not for practical because it was implemented for learning.
 
 ## Requirements
