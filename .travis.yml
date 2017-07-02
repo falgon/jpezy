@@ -13,6 +13,7 @@ matrix:
                           - ubuntu-toolchain-r-test
 install:
         - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+        - sudo add-apt-repository ppa:jonathonf/gcc-7.1
         - sudo apt-get -qq update
         - sudo apt-get -qq install gcc-7
 script:
