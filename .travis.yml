@@ -12,9 +12,9 @@ matrix:
                   sources: &sources
                           - ubuntu-toolchain-r-test
 before_install:
-        - echo "Package: gcc-7" >> /etc/apt/preferences
-        - echo "Pin: release n=zesty" >> /etc/apt/preferences
-        - echo "Pin-Priority: 990" >> /etc/apt/preferences
+        - bash -c 'echo \"Package: gcc-7\" >> /etc/apt/preferences'
+        - bash -c 'echo \"Pin: release n=zesty\" >> /etc/apt/preferences'
+        - bash -c 'echo \"Pin-Priority: 990\" >> /etc/apt/preferences'
         - sudo apt-get -qq update
 install:
         - sudo apt-get install -qq gcc-7
