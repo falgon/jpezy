@@ -6,6 +6,8 @@
  _/ | .__/ \___/___|\__, |
 |__/|_|             |___/
 ```
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae48c146f92e4fb088116091727440ad)](https://www.codacy.com/app/falgon/jpezy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=falgon/jpezy&amp;utm_campaign=Badge_Grade)
+
 
 ## jpeg + lazy = jpezy
 The lazy and simply JPEG encoder implementation. This project is not for practical because it was implemented for learning.

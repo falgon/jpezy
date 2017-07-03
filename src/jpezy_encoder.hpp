@@ -1,10 +1,3 @@
-/*
- *
- * JPEZY
- * Copyright (c) 2017 Roki
- *
- */
-
 #ifndef INCLUDED_JPEZY_ENCODER_HPP
 #define INCLUDED_JPEZY_ENCODER_HPP
 #define _USE_MATH_DEFINES
@@ -17,7 +10,7 @@
 #include<cmath>
 #include<chrono>
 #include<srook/algorithm/for_each.hpp>
-#include<boost/math/constants/constants.hpp>
+#include<srook/math/constants/pi.hpp>
 #include<boost/range/algorithm/fill.hpp>
 
 #include<boost/range/algorithm/copy.hpp>
@@ -33,7 +26,8 @@ struct encoder{
 	{
 		static_assert(rgb_size == static_cast<std::size_t>(RGB::ELEMENT_SIZE));
 
-		constexpr double pi = boost::math::constants::pi<double>();
+		//constexpr double pi = boost::math::constants::pi<double>();
+		constexpr double pi = srook::math::pi<double>;
 
 		srook::for_each(
 				srook::make_counter(cos_table),
