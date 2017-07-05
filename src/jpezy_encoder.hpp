@@ -12,7 +12,6 @@
 #include<srook/algorithm/for_each.hpp>
 #include<srook/math/constants/pi.hpp>
 #include<boost/range/algorithm/fill.hpp>
-
 #include<boost/range/algorithm/copy.hpp>
 #include<iostream>
 #include<experimental/iterator>
@@ -26,7 +25,6 @@ struct encoder{
 	{
 		static_assert(rgb_size == static_cast<std::size_t>(RGB::ELEMENT_SIZE));
 
-		//constexpr double pi = boost::math::constants::pi<double>();
 		constexpr double pi = srook::math::pi<double>;
 
 		srook::for_each(
