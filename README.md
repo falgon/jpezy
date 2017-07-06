@@ -11,8 +11,6 @@
 
 ## jpeg + lazy = jpezy
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae48c146f92e4fb088116091727440ad)](https://www.codacy.com/app/falgon/jpezy?utm_source=github.com&utm_medium=referral&utm_content=falgon/jpezy&utm_campaign=badger)
-
 The lazy and simply JPEG encoder implementation. This project is not for practical because it was implemented for learning.
 
 ## Requirements
@@ -68,8 +66,6 @@ Usage: jpezy <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | -
 * <i>output.ppm</i>: When you designate ppm, the image is output ppm without doing anything.
 * <i>--debug</i>: When you designate this option, the image is not output, and ppm data are just output on standard output.
 
-<<<<<<< HEAD
-=======
 ## Reference
 * [ITU-T81](https://www.w3.org/Graphics/JPEG/itu-t81.pdf) 
 * [Independent JPEG Group's JPEG software の使い方](https://cetus.sakura.ne.jp/softlab/software2/jpeg6b_usage_j.html)
@@ -77,6 +73,5 @@ Usage: jpezy <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | -
 * [JPEG メタデータについて (バイナリを眺めながら)](http://diary.awm.jp/~yoya/data/2015/10/16/JPEGMeta_rev3.pdf)
 * [JPEG-概念からC++での実装まで](https://www.amazon.co.jp/JPEG%E2%80%95%E6%A6%82%E5%BF%B5%E3%81%8B%E3%82%89C-%E3%81%A7%E3%81%AE%E5%AE%9F%E8%A3%85%E3%81%BE%E3%81%A7-%E6%A9%8B%E6%9C%AC-%E6%99%8B%E4%B9%8B%E4%BB%8B/dp/4797330457)
 
->>>>>>> 91fb12b... update readme
 ## License
 [MIT License](https://github.com/falgon/jpezy/blob/master/LICENSE)
