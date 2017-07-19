@@ -43,8 +43,8 @@ auto exec(const jpezy::pnm_stream& pnm,const char* ofile,Modes&&... m)noexcept(f
 			case Mode::DEBUG:
 				std::cout << pnm << std::endl;
 				break;
-			case Mode::UD:
-				throw std::runtime_error("Maybe broken memory");
+			case Mode::UD: [[fallthrough]];
+			case Mode::GRAY: [[fallthrough]];
 			default:
 				throw std::runtime_error("Maybe broken memory");
 		};

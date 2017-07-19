@@ -115,7 +115,8 @@ private:
 				case 0: n = 0; break;
 				case 1: n = 4; break;
 				case 2: n = 32; break;
-				case 3: n = 36;
+				case 3: n = 36; break;
+				default: assert("mcu_size must be 4");
 			}
 			for(int y = 0; y < block; y += 2){
 				for(int x = 0; x < block; x += 2){
