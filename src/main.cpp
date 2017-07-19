@@ -60,7 +60,7 @@ int main(const int argc,const char* argv[])
 	Mode m1 = Mode::UD,m2 = Mode::UD;
 
 	const std::string_view sv1 = argv[2];
-	std::optional<std::string_view> sv2 = std::nullopt;
+	OPTIONAL<std::string_view> sv2 = NULLOPT;
 
 	if(argc>2){
 		sv2 = argv[3];
