@@ -1,29 +1,23 @@
-/*
- *
- * JPEZY
- * Copyright (c) 2017 Roki
- *
- */
 #ifndef INCLUDED_JPEZY_JPEG_HPP
 #define INCLUDED_JPEZY_JPEG_HPP
 #include<tuple>
 #include<optional>
 #include<chrono>
 #include<array>
+#include<iostream>
+#include<srook/cstddef/byte.hpp>
 
 namespace jpezy{
 
-using byte = unsigned char;
-
 const std::array<int,64> ZZ{
-	0,  1,  8, 16,  9,  2,  3, 10,
-	17, 24, 32, 25, 18, 11,  4,  5,
-	12, 19, 26, 33, 40, 48, 41, 34,
-	27, 20, 13,  6,  7, 14, 21, 28,
-	35, 42, 49, 56, 57, 50, 43, 36,
-	29, 22, 15, 23, 30, 37, 44, 51,
-	58, 59, 52, 45, 38, 31, 39, 46,
-	53, 60, 61, 54, 47, 55, 62, 63
+	    0,  1,  8, 16,  9,  2,  3, 10,
+		17, 24, 32, 25, 18, 11,  4,  5,
+		12, 19, 26, 33, 40, 48, 41, 34,
+		27, 20, 13,  6,  7, 14, 21, 28,
+		35, 42, 49, 56, 57, 50, 43, 36,
+		29, 22, 15, 23, 30, 37, 44, 51,
+		58, 59, 52, 45, 38, 31, 39, 46,
+		53, 60, 61, 54, 47, 55, 62, 63
 };
 
 enum class MARKER {
@@ -124,8 +118,8 @@ struct property{
 			int, // sample precision
 			const char*, // comment
 			Format, // format
-			byte, // Major Revisions
-			byte, // Minor Revisions
+			srook::byte, // Major Revisions
+			srook::byte, // Minor Revisions
 			Units, // units
 			int, // width density
 			int, // height density
@@ -134,10 +128,9 @@ struct property{
 			ExtensionCodes // Extension Code
 		>;
 
-	template<
-		class... Ts,
-		std::enable_if_t<sizeof...(Ts) == std::tuple_size<property_type>::value,std::nullptr_t> =nullptr>
-	constexpr property(Ts&&... ts):pr{std::forward<Ts>(ts)...}
+	template<class... Ts,std::enable_if_t<sizeof...(Ts) == std::tuple_size<property_type>::value,std::nullptr_t> =nullptr>
+	constexpr property(Ts&&... ts)
+		:pr{std::forward<Ts>(ts)...}
 	{
 		static_assert(static_cast<std::size_t>(At::ELEMENT_SIZE) == std::tuple_size<property_type>::value);
 	}

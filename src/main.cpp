@@ -1,10 +1,3 @@
-/*
- *
- * JPEZY
- * Copyright (c) 2017 Roki
- *
- */
-
 #include"pnm_stream.hpp"
 
 decltype(EXIT_FAILURE) disp_error()noexcept(false)
@@ -13,7 +6,7 @@ decltype(EXIT_FAILURE) disp_error()noexcept(false)
 	return EXIT_FAILURE;
 }
 
-enum class Mode : jpezy::byte{JPEG,GRAY,PPM,DEBUG,UD};
+enum class Mode{JPEG,GRAY,PPM,DEBUG,UD};
 
 template<class... Modes>
 auto exec(const jpezy::pnm_stream& pnm,const char* ofile,Modes&&... m)noexcept(false)
@@ -43,8 +36,10 @@ auto exec(const jpezy::pnm_stream& pnm,const char* ofile,Modes&&... m)noexcept(f
 			case Mode::DEBUG:
 				std::cout << pnm << std::endl;
 				break;
-			case Mode::UD: [[fallthrough]];
-			case Mode::GRAY: [[fallthrough]];
+			case Mode::GRAY:
+				[[fallthrough]];
+			case Mode::UD:
+				[[fallthrough]];
 			default:
 				throw std::runtime_error("Maybe broken memory");
 		};
@@ -60,7 +55,7 @@ int main(const int argc,const char* argv[])
 	Mode m1 = Mode::UD,m2 = Mode::UD;
 
 	const std::string_view sv1 = argv[2];
-	OPTIONAL<std::string_view> sv2 = NULLOPT;
+	std::optional<std::string_view> sv2 = std::nullopt;
 
 	if(argc>2){
 		sv2 = argv[3];

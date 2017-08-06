@@ -3,9 +3,8 @@
 #define _USE_MATH_DEFINES
 #include"jpezy.hpp"
 #include"huffman_table.hpp"
-#include"ofpstream.hpp"
+#include<srook/io/bofstream.hpp>
 #include"jpezy_writer.hpp"
-
 #include<array>
 #include<cmath>
 #include<chrono>
@@ -15,13 +14,14 @@
 #include<boost/range/algorithm/copy.hpp>
 #include<iostream>
 #include<experimental/iterator>
+#include<vector>
 
 namespace jpezy{
 
 template<class T>
 struct encoder{
-	constexpr encoder(const property& pr,const std::vector<T>& r,const std::vector<T>& g,const std::vector<T>& b)
-		:pr(pr),r{r},g{g},b{b},Y_block{},Cb_block{},Cr_block{},cos_table{},DCT_data{},pre_DC{}
+	constexpr encoder(const property& pr_,const std::vector<T>& r_,const std::vector<T>& g_,const std::vector<T>& b_)
+		:pr(pr_),r{r_},g{g_},b{b_},Y_block{},Cb_block{},Cr_block{},cos_table{},DCT_data{},pre_DC{}
 	{
 		static_assert(rgb_size == static_cast<std::size_t>(RGB::ELEMENT_SIZE));
 
@@ -100,7 +100,7 @@ private:
 					const int jj = sx < pr.get<property::At::HSize>() ? sx : pr.get<property::At::HSize>() - 1;
 					const int index = ii * pr.get<property::At::HSize>() + jj;
 
-					const byte& rv = r[index],gv = g[index],bv = b[index];
+					const srook::byte& rv = r[index],gv = g[index],bv = b[index];
 
 					*yp++ = RGB::Y(rv,gv,bv);
 					*cbp++ = RGB::Cb(rv,gv,bv);
@@ -115,8 +115,8 @@ private:
 				case 0: n = 0; break;
 				case 1: n = 4; break;
 				case 2: n = 32; break;
-				case 3: n = 36; break;
-				default: assert("mcu_size must be 4");
+				case 3: n = 36;break;
+				default:break;
 			}
 			for(int y = 0; y < block; y += 2){
 				for(int x = 0; x < block; x += 2){
@@ -159,7 +159,7 @@ private:
 	}
 
 	template<class U,std::size_t dcs,std::size_t acs>
-	void encode_huffman(int cs,ofpstream& ofs,const huffmanCode_Tb<U,dcs>& dcT,const huffmanCode_Tb<U,acs>& acT,int eob_idx,int zrl_idx)noexcept(false)
+	void encode_huffman(int cs,srook::bofstream& ofs,const huffmanCode_Tb<U,dcs>& dcT,const huffmanCode_Tb<U,acs>& acT,int eob_idx,int zrl_idx)noexcept(false)
 	{
 		const decltype(DCT_data)& dct_data = DCT_data;
 
@@ -171,8 +171,8 @@ private:
 		for(int abs_diff = std::abs(diff); abs_diff > 0; abs_diff >>= 1,++di);
 		if(di > static_cast<signed>(dcT.size()))throw std::runtime_error(__func__);
 		
-		(ofs | ofpstream::Bits(dcT.size_tb[di])) << dcT.code_tb[di];
-		if(di)(ofs | ofpstream::Bits(di)) << (diff < 0 ? diff - 1 : diff);
+		(ofs | srook::bofstream::Bits(dcT.size_tb[di])) << dcT.code_tb[di];
+		if(di)(ofs | srook::bofstream::Bits(di)) << (diff < 0 ? diff - 1 : diff);
 		
 		// AC
 		for(std::size_t n=1,run = 0; n<blocks_size; ++n){
@@ -180,7 +180,7 @@ private:
 			
 			if(abs_coefficient){
 				while(run > 15){
-					(ofs | ofpstream::Bits(acT.size_tb[zrl_idx])) << acT.code_tb[zrl_idx];
+					(ofs | srook::bofstream::Bits(acT.size_tb[zrl_idx])) << acT.code_tb[zrl_idx];
 					run -= 16;
 				}
 				int s = 0;
@@ -189,21 +189,21 @@ private:
 				const int a_di = run * 10 + s + (run == 15);
 				if(a_di >= static_cast<signed>(acT.size()))throw std::runtime_error(__func__);
 				
-				(ofs | ofpstream::Bits(acT.size_tb[a_di])) << acT.code_tb[a_di];
+				(ofs | srook::bofstream::Bits(acT.size_tb[a_di])) << acT.code_tb[a_di];
 
 				int v = dct_data[ZZ[n]];
 				if(v<0)--v;
 
-				(ofs | ofpstream::Bits(s)) << v;
+				(ofs | srook::bofstream::Bits(s)) << v;
 				run = 0;
 			}else{
-				if(n == 63)(ofs | ofpstream::Bits(acT.size_tb[eob_idx])) << acT.code_tb[eob_idx];
+				if(n == 63)(ofs | srook::bofstream::Bits(acT.size_tb[eob_idx])) << acT.code_tb[eob_idx];
 				else ++run;
 			}
 		}
 	}
 
-	void make_MCU(ofpstream& ofps)noexcept(false)
+	void make_MCU(srook::bofstream& ofps)noexcept(false)
 	{
 		for(auto& v:Y_block){
 			DCT(v);
@@ -221,17 +221,17 @@ private:
 	}
 
 	struct RGB{
-		static constexpr int Y(byte r,byte g,byte b)
+		static constexpr int Y(srook::byte r,srook::byte g,srook::byte b)
 		{
-			return int( (0.2990 * r) + (0.5870 * g) + (0.1140 * b) - 128);
+			return int( (0.2990 * srook::to_integer<int>(r)) + (0.5870 * srook::to_integer<int>(g)) + (0.1140 * srook::to_integer<int>(b)) - 128);
 		}
-		static constexpr int Cb(byte r,byte g,byte b)
+		static constexpr int Cb(srook::byte r,srook::byte g,srook::byte b)
 		{
-			return int( -(0.1687 * r) - (0.3313 * g) + (0.5000 * b));
+			return int( -(0.1687 * srook::to_integer<int>(r)) - (0.3313 * srook::to_integer<int>(g)) + (0.5000 * srook::to_integer<int>(b)));
 		}
-		static constexpr int Cr(byte r,byte g,byte b)
+		static constexpr int Cr(srook::byte r,srook::byte g,srook::byte b)
 		{
-			return int( (0.5000 * r) - (0.4187 * g) - (0.0813 * b));
+			return int( (0.5000 * srook::to_integer<int>(r)) - (0.4187 * srook::to_integer<int>(g)) - (0.0813 * srook::to_integer<int>(b)));
 		}
 		enum {R,G,B,ELEMENT_SIZE};
 	};
