@@ -1,23 +1,43 @@
 #ifndef INCLUDED_JPEZY_JPEG_HPP
 #define INCLUDED_JPEZY_JPEG_HPP
 #include<tuple>
-#include<optional>
 #include<chrono>
 #include<array>
+#include<string>
 #include<iostream>
+
+#include<boost/parameter/name.hpp>
+
 #include<srook/cstddef/byte.hpp>
+#include<srook/optional.hpp>
+#include<srook/mpl/variadic_player.hpp>
 
 namespace jpezy{
 
+void disp_logo()
+{
+	std::cout << "   _" << std::endl;
+	std::cout << "  (_)_ __   ___ _____   _" <<std::endl;
+	std::cout << "  | | '_ \\ / _ \\_  / | | | " <<std::endl;
+	std::cout << "  | | |_) |  __// /| |_| |" <<std::endl;
+	std::cout << " _/ | .__/ \\___/___|\\__, |" <<std::endl;
+	std::cout << "|__/|_|             |___/\tby roki\n" <<std::endl;
+}
+
+struct Release;
+struct Debug;
+struct COLOR_MODE;
+struct GRAY_MODE;
+
 const std::array<int,64> ZZ{
-	    0,  1,  8, 16,  9,  2,  3, 10,
-		17, 24, 32, 25, 18, 11,  4,  5,
-		12, 19, 26, 33, 40, 48, 41, 34,
-		27, 20, 13,  6,  7, 14, 21, 28,
-		35, 42, 49, 56, 57, 50, 43, 36,
-		29, 22, 15, 23, 30, 37, 44, 51,
-		58, 59, 52, 45, 38, 31, 39, 46,
-		53, 60, 61, 54, 47, 55, 62, 63
+	{0,  1,  8, 16,  9,  2,  3, 10,
+	17, 24, 32, 25, 18, 11,  4,  5,
+	12, 19, 26, 33, 40, 48, 41, 34,
+	27, 20, 13,  6,  7, 14, 21, 28,
+	35, 42, 49, 56, 57, 50, 43, 36,
+	29, 22, 15, 23, 30, 37, 44, 51,
+	58, 59, 52, 45, 38, 31, 39, 46,
+	53, 60, 61, 54, 47, 55, 62, 63}
 };
 
 enum class MARKER {
@@ -57,26 +77,26 @@ enum class MARKER {
 // ISO/IEC 10918-1:1993(E)
 // Table K.1 - Luminance quantization table
 static const std::array<int,64> YQuantumTb{
-	16,11,10,16,24,40,51,61,
+	{16,11,10,16,24,40,51,61,
 	12,12,14,19,26,58,60,55,
 	14,13,16,24,40,57,69,56,
 	14,17,22,29,51,87,80,62,
 	18,22,37,56,68,109,103,77,
 	24,35,55,64,81,104,113,92,
 	49,64,78,87,103,121,120,101,
-	72,92,95,98,112,100,103,99
+	72,92,95,98,112,100,103,99}
 };
 
 // Table K.2 - Chrominance quantization table
  static const std::array<int,64> CQuantumTb{
-	17,18,24,47,99,99,99,99,
+	 {17,18,24,47,99,99,99,99,
 	18,21,26,66,99,99,99,99,
 	24,26,56,99,99,99,99,99,
 	47,66,99,99,99,99,99,99,
 	99,99,99,99,99,99,99,99,
 	99,99,99,99,99,99,99,99,
 	99,99,99,99,99,99,99,99,
-	99,99,99,99,99,99,99,99
+	99,99,99,99,99,99,99,99}
 };
 
 struct property{
@@ -91,6 +111,9 @@ struct property{
 		JPEG = 0x10,
 		oneByte_pixel = 0x11,
 		threeByte_pixel = 0x13
+	};
+	enum AnalyzedResult{
+		Yet = 0,is_htable = 0x01,is_qtable = 0x02,is_jfif = 0x04,is_comment = 0x08,is_start_data = 0x10
 	};
 	enum class At{
 		HSize,
@@ -107,84 +130,228 @@ struct property{
 		HThumbnail,
 		VThumbnail,
 		ExtensionCode,
+		Decodable,
 		ELEMENT_SIZE
 	};
 
-	using property_type =
-		std::tuple<
-			int, // src image width
-			int, // src images height
-			int, // dimension
-			int, // sample precision
-			const char*, // comment
-			Format, // format
-			srook::byte, // Major Revisions
-			srook::byte, // Minor Revisions
-			Units, // units
-			int, // width density
-			int, // height density
-			int, // width thumbnail
-			int, // height thumbnail
-			ExtensionCodes // Extension Code
-		>;
+	std::size_t width,height;
+	int dimension,sample_precision;
+	std::string comment;
+	Format format;
+	srook::byte major_rev,minor_rev;
+	Units uni;
+	int width_density,height_density,width_thumbnail,height_thumbnail;
+	ExtensionCodes ext;
+	int decodable;
 
-	template<class... Ts,std::enable_if_t<sizeof...(Ts) == std::tuple_size<property_type>::value,std::nullptr_t> =nullptr>
-	constexpr property(Ts&&... ts)
-		:pr{std::forward<Ts>(ts)...}
+	using property_member = 
+		srook::pack<std::size_t,std::size_t,int,int,std::string,Format,srook::byte,srook::byte,Units,int,int,int,int,ExtensionCodes,int>;
+
+	explicit property(std::size_t w,std::size_t h,int dim,int sample_pre,std::string com,Format form,srook::byte marev,srook::byte mirev,Units u,int wd,int hd,int wt,int ht,ExtensionCodes e,int decflag = AnalyzedResult::Yet)
+		:width(std::move(w)),height(std::move(h)),dimension(std::move(dim)),sample_precision(std::move(sample_pre)),comment(std::move(com)),format(std::move(form)),
+		major_rev(std::move(marev)),minor_rev(std::move(mirev)),uni(std::move(u)),width_density(std::move(wd)),height_density(std::move(hd)),width_thumbnail(std::move(wt)),
+		height_thumbnail(std::move(ht)),ext(std::move(e)),decodable(decflag)
+	{}
+	explicit property() = default;
+	property(const property&) = default;
+
+	template<At at>
+	const auto& get()const noexcept
 	{
-		static_assert(static_cast<std::size_t>(At::ELEMENT_SIZE) == std::tuple_size<property_type>::value);
+		if constexpr(at == At::HSize){
+			return width;
+		}else if constexpr(at == At::VSize){
+			return height;
+		}else if constexpr(at == At::Dimension){
+			return dimension;
+		}else if constexpr(at == At::SamplePrecision){
+			return sample_precision;
+		}else if constexpr(at == At::Comment){
+			return comment;
+		}else if constexpr(at == At::Format){
+			return format;
+		}else if constexpr(at == At::MajorRevisions){
+			return major_rev;
+		}else if constexpr(at == At::MinorRevisions){
+			return minor_rev;
+		}else if constexpr(at == At::Units){
+			return uni;
+		}else if constexpr(at == At::HDensity){
+			return width_density;
+		}else if constexpr(at == At::VDensity){
+			return height_density;
+		}else if constexpr(at == At::HThumbnail){
+			return width_thumbnail;
+		}else if constexpr(at == At::VThumbnail){
+			return height_thumbnail;
+		}else if constexpr(at == At::ExtensionCode){
+			return ext;
+		}else if constexpr(at == At::Decodable){
+			return decodable;
+		}
+	}
+
+	template<std::size_t at>
+	const auto& get()const noexcept
+	{
+		if constexpr(at == 0){
+			return width;
+		}else if constexpr(at == 1){
+			return height;
+		}else if constexpr(at == 2){
+			return dimension;
+		}else if constexpr(at == 3){
+			return sample_precision;
+		}else if constexpr(at == 4){
+			return comment;
+		}else if constexpr(at == 5){
+			return format;
+		}else if constexpr(at == 6){
+			return major_rev;
+		}else if constexpr(at == 7){
+			return minor_rev;
+		}else if constexpr(at == 8){
+			return uni;
+		}else if constexpr(at == 9){
+			return width_density;
+		}else if constexpr(at == 10){
+			return height_density;
+		}else if constexpr(at == 11){
+			return width_thumbnail;
+		}else if constexpr(at == 12){
+			return height_thumbnail;
+		}else if constexpr(at == 13){
+			return ext;
+		}else if constexpr(at == 14){
+			return decodable;
+		}
 	}
 
 	template<At at>
-	constexpr decltype(auto) get()const noexcept
+	auto& get()noexcept
 	{
-		return std::get<static_cast<std::size_t>(at)>(pr);
+		if constexpr(at == At::HSize){
+			return width;
+		}else if constexpr(at == At::VSize){
+			return height;
+		}else if constexpr(at == At::Dimension){
+			return dimension;
+		}else if constexpr(at == At::SamplePrecision){
+			return sample_precision;
+		}else if constexpr(at == At::Comment){
+			return comment;
+		}else if constexpr(at == At::Format){
+			return format;
+		}else if constexpr(at == At::MajorRevisions){
+			return major_rev;
+		}else if constexpr(at == At::MinorRevisions){
+			return minor_rev;
+		}else if constexpr(at == At::Units){
+			return uni;
+		}else if constexpr(at == At::HDensity){
+			return width_density;
+		}else if constexpr(at == At::VDensity){
+			return height_density;
+		}else if constexpr(at == At::HThumbnail){
+			return width_thumbnail;
+		}else if constexpr(at == At::VThumbnail){
+			return height_thumbnail;
+		}else if constexpr(at == At::ExtensionCode){
+			return ext;
+		}else if constexpr(at == At::Decodable){
+			return decodable;
+		}
 	}
-private:
-	property_type pr;
 };
 
+using namespace boost::parameter;
 
- struct raii_messenger{
-	      raii_messenger(const char* message):mes(message),stoped(false)
-		  {
-			  std::cout << mes << " ";
-			  start = std::chrono::system_clock::now();
-		  }
+namespace label{
 
-		  void restart(const char* str=nullptr)
-		  {
-			  if(stoped){
-				  if(str){
-					  std::cout << str << std::endl;
-				  }else{
-				  	std::cout << mes << " ";
-				  }
-				  start = std::chrono::system_clock::now();
-				  stoped = false;
-			  }
-		  }
+BOOST_PARAMETER_NAME(width)
+BOOST_PARAMETER_NAME(height)
+BOOST_PARAMETER_NAME(dimension)
+BOOST_PARAMETER_NAME(sample_precision)
+BOOST_PARAMETER_NAME(comment)
+BOOST_PARAMETER_NAME(format)
+BOOST_PARAMETER_NAME(major_rev)
+BOOST_PARAMETER_NAME(minor_rev)
+BOOST_PARAMETER_NAME(units)
+BOOST_PARAMETER_NAME(width_density)
+BOOST_PARAMETER_NAME(height_density)
+BOOST_PARAMETER_NAME(width_thumbnail)
+BOOST_PARAMETER_NAME(height_thumbnail)
+BOOST_PARAMETER_NAME(extension_code)
+BOOST_PARAMETER_NAME(decodable)
 
-		  std::optional<float> stop()
-		  {
-			  if(!stoped){
-				  end = std::chrono::system_clock::now();
-				  const float time = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count()) / 1000 ;
-				  std::cout << "Done! Processing time: " << time << "(sec)" << std::endl;
-				  stoped = true;
-				  return std::make_optional(time);
-			  }
-			  return std::nullopt;
-		  }
+}
 
-		  ~raii_messenger()
-		  {
-			  stop();
-		  }
+namespace detail{
+
+property make_property_impl(
+		std::size_t width,std::size_t height,int dimension,int sample_precision,std::string comment,property::Format form,srook::byte major_rev,srook::byte minor_rev,
+		property::Units units,int width_density,int height_density,int width_thumbnail,int height_thumbnail,property::ExtensionCodes extension_code,int decflag = property::AnalyzedResult::Yet
+)
+{
+	return property{
+		width,height,dimension,sample_precision,comment,form,major_rev,minor_rev,units,width_density,height_density,
+		height_thumbnail,width_thumbnail,extension_code,decflag
+	};
+}
+
+} // namespace detail
+
+template<class ArgPack>
+property make_property(const ArgPack& args)
+{
+	using namespace label;
+
+	return detail::make_property_impl(
+			args[_width],args[_height],args[_dimension],args[_sample_precision],args[_comment],args[_format],args[_major_rev],args[_minor_rev],
+			args[_units],args[_width_density],args[_height_density],args[_width_thumbnail],args[_height_thumbnail],args[_extension_code],args[_decodable]
+	);
+}
+
+struct raii_messenger{
+	raii_messenger(const char* message,const char* ind=""):mes(message),indent(ind),stoped(false)
+	{
+		std::cout << indent << mes << " ";
+		start = std::chrono::system_clock::now();
+	}
+
+	void restart(const char* str = nullptr)
+	{
+		if(stoped){
+			if(str){
+				std::cout << str << std::endl;
+			}else{
+				std::cout << mes << " ";
+			}
+			start = std::chrono::system_clock::now();
+			stoped = false;
+		}
+	}
+
+	srook::optional<float> stop()
+	{
+		if(!stoped){
+			end = std::chrono::system_clock::now();
+			const float time = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count()) / 1000 ;
+			std::cout << indent << "Done! Processing time: " << time << "(sec)" << std::endl;
+			stoped = true;
+			return srook::make_optional(time);
+		}
+		return srook::nullopt;
+	}
+
+	~raii_messenger()
+	{
+		stop();
+	}
 private:
-		  std::chrono::system_clock::time_point start,end;
-		  const char* mes;
-		  bool stoped;
+	std::chrono::system_clock::time_point start,end;
+	const char* mes,*indent;
+	bool stoped;
 };
 
 

@@ -5,7 +5,6 @@
 #include"huffman_table.hpp"
 #include<srook/config/noexcept_detection.hpp>
 #include<fstream>
-#include<string_view>
 #include<type_traits>
 #include<array>
 #include<cstring>
@@ -35,10 +34,10 @@ struct jpezy_writer{
 		(ofps | srook::bofstream::Byte) << pr.get<property::At::VThumbnail>();
 
 		// Comment
-		if(pr.get<property::At::Comment>()){
+		if(!pr.get<property::At::Comment>().empty()){
 			(ofps | srook::bofstream::Byte) << MARKER::Marker << MARKER::COM;
-			(ofps | srook::bofstream::Word) << static_cast<unsigned int>(std::strlen(pr.get<property::At::Comment>()) + 3);
-			(ofps | srook::bofstream::Byte_n(static_cast<unsigned int>(std::strlen(pr.get<property::At::Comment>())) + 1)) << pr.get<property::At::Comment>();
+			(ofps | srook::bofstream::Word) << static_cast<unsigned int>(pr.get<property::At::Comment>().size() + 3);
+			(ofps | srook::bofstream::Byte_n(static_cast<unsigned int>(pr.get<property::At::Comment>().size() + 1))) << pr.get<property::At::Comment>().data();
 		}
 
 		// DQT
@@ -46,13 +45,13 @@ struct jpezy_writer{
 		(ofps | srook::bofstream::Word) << 67;
 		(ofps | srook::bofstream::Byte) << 0;
 		for(std::size_t i=0; i<YQuantumTb.size(); ++i){
-			(ofps | srook::bofstream::Byte) << static_cast<SROOK_BYTE>( YQuantumTb[ ZZ[i] ] );
+			(ofps | srook::bofstream::Byte) << static_cast<srook::byte>( YQuantumTb[ ZZ[i] ] );
 		}
 		(ofps | srook::bofstream::Byte) << MARKER::Marker << MARKER::DQT;
 		(ofps | srook::bofstream::Word) << 67;
 		(ofps | srook::bofstream::Byte) << 1;
 		for(std::size_t i=0; i<CQuantumTb.size(); ++i){
-			(ofps | srook::bofstream::Byte) << static_cast<SROOK_BYTE>( CQuantumTb[ ZZ[i] ] );
+			(ofps | srook::bofstream::Byte) << static_cast<srook::byte>( CQuantumTb[ ZZ[i] ] );
 		}
 
 		// DHT

@@ -1,7 +1,7 @@
 #ifndef INCLUDED_JPEZY_HUFFMAN_TABLE_HPP
 #define INCLUDED_JPEZY_HUFFMAN_TABLE_HPP
 
-#include"jpezy.hpp"
+#include"../jpezy.hpp"
 
 namespace jpezy{
 

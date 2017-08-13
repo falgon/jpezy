@@ -27,6 +27,8 @@
 *.exe
 *.out
 *.app
+*.swp
+.*.swp
 
 # Mac
 .DS_Store

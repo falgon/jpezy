@@ -1,15 +1,15 @@
-#include"pnm_stream.hpp"
+#include"encode_io.hpp"
 
 decltype(EXIT_FAILURE) disp_error()noexcept(false)
 {
-	std::cerr << "Usage: jpezy <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | --debug )" << std::endl;
+	std::cerr << "Usage: jpezy_encoder <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | --debug )" << std::endl;
 	return EXIT_FAILURE;
 }
 
 enum class Mode{JPEG,GRAY,PPM,DEBUG,UD};
 
 template<class... Modes>
-auto exec(const jpezy::pnm_stream& pnm,const char* ofile,Modes&&... m)noexcept(false)
+auto exec(const jpezy::encode_io& pnm,const char* ofile,Modes&&... m)noexcept(false)
 -> std::enable_if_t<std::conjunction_v<std::is_same<Mode,std::decay_t<Modes>>...> and (sizeof...(m) > 0 and sizeof...(m) < 3),void>
 {
 	const std::tuple<std::decay_t<Modes>...> ms{std::forward<Modes>(m)...};
@@ -55,7 +55,7 @@ int main(const int argc,const char* argv[])
 	Mode m1 = Mode::UD,m2 = Mode::UD;
 
 	const std::string_view sv1 = argv[2];
-	std::optional<std::string_view> sv2 = std::nullopt;
+	srook::optional<std::string_view> sv2 = srook::nullopt;
 
 	if(argc>2){
 		sv2 = argv[3];
@@ -76,15 +76,10 @@ int main(const int argc,const char* argv[])
 		return disp_error();
 	}
 	
-	std::cout << "   _" << std::endl;
-	std::cout << "  (_)_ __   ___ _____   _" <<std::endl;
-	std::cout << "  | | '_ \\ / _ \\_  / | | | " <<std::endl;
-	std::cout << "  | | |_) |  __// /| |_| |" <<std::endl;
-	std::cout << " _/ | .__/ \\___/___|\\__, |" <<std::endl;
-	std::cout << "|__/|_|             |___/\tby roki\n" <<std::endl;
+	jpezy::disp_logo();
 
 	jpezy::raii_messenger section("Reading the input file...");
-	jpezy::pnm_stream pnm(argv[1]);
+	jpezy::encode_io pnm(argv[1]);
 	if(!pnm){
 		std::cerr << "The file is not found or the formatting error" << std::endl;
 		return disp_error();

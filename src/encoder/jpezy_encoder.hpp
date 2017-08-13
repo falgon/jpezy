@@ -1,10 +1,10 @@
 #ifndef INCLUDED_JPEZY_ENCODER_HPP
 #define INCLUDED_JPEZY_ENCODER_HPP
 #define _USE_MATH_DEFINES
-#include"jpezy.hpp"
+#include"../jpezy.hpp"
 #include"huffman_table.hpp"
-#include<srook/io/bofstream.hpp>
 #include"jpezy_writer.hpp"
+#include<srook/io/bofstream.hpp>
 #include<array>
 #include<cmath>
 #include<chrono>
@@ -34,9 +34,6 @@ struct encoder{
 				}
 		);
 	}
-
-	struct COLOR_MODE;
-	struct GRAY_MODE;
 
 	template<class MODE_TAG = COLOR_MODE>
 	std::size_t encode(const char* output_file)noexcept(false)
@@ -89,16 +86,16 @@ private:
 	{
 		decltype(Y_block) Crblock{},Cbblock{};
 
-		for(int i=0; i < mcu_size; ++i){
+		for(std::size_t i=0; i < mcu_size; ++i){
 			typename decltype(Y_block)::value_type::iterator
 			   	yp = std::begin(Y_block[i]),cbp = std::begin(Cbblock[i]),crp = std::begin(Crblock[i]);
 
-			for(int sy = uy * (block * 2) + ((i > 1) ? block : 0),sy_t = sy + block; sy < sy_t; ++sy){
-				const int ii = sy < pr.get<property::At::VSize>() ? sy : pr.get<property::At::VSize>() - 1;
+			for(std::size_t sy = uy * (block * 2) + ((i > 1) ? block : 0),sy_t = sy + block; sy < sy_t; ++sy){
+				const std::size_t ii = sy < pr.get<property::At::VSize>() ? sy : pr.get<property::At::VSize>() - 1;
 
-				for(int sx = ux * (block * 2) + ((i & 1) ? block : 0),sx_t = sx + block; sx < sx_t; ++sx){
-					const int jj = sx < pr.get<property::At::HSize>() ? sx : pr.get<property::At::HSize>() - 1;
-					const int index = ii * pr.get<property::At::HSize>() + jj;
+				for(std::size_t sx = ux * (block * 2) + ((i & 1) ? block : 0),sx_t = sx + block; sx < sx_t; ++sx){
+					const std::size_t jj = sx < pr.get<property::At::HSize>() ? sx : pr.get<property::At::HSize>() - 1;
+					const std::size_t index = ii * pr.get<property::At::HSize>() + jj;
 
 					const srook::byte& rv = r[index],gv = g[index],bv = b[index];
 
