@@ -333,7 +333,7 @@ struct property {
     }
 };
 
-using namespace boost::parameter;
+//using namespace boost::parameter;
 
 namespace label {
     BOOST_PARAMETER_NAME(width)
@@ -351,7 +351,7 @@ namespace label {
     BOOST_PARAMETER_NAME(height_thumbnail)
     BOOST_PARAMETER_NAME(extension_code)
     BOOST_PARAMETER_NAME(decodable)
-}
+} // namespace label
 
 namespace detail {
 

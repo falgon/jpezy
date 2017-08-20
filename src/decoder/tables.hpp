@@ -34,8 +34,8 @@ struct huffman_table {
 
     std::size_t size() const noexcept
     {
-        assert(sizeTP.size() == codeTP.size() && codeTP.size() == valueTP.size());
-        return sizeTP.size();
+		assert(sizeTP.size() == codeTP.size() && codeTP.size() == valueTP.size());
+		return sizeTP.size();
     }
 };
 
