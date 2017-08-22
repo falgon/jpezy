@@ -8,12 +8,11 @@
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/algorithm/fill.hpp>
 #include <chrono>
-#include <cmath>
 #include <experimental/iterator>
 #include <iostream>
 #include <srook/algorithm/for_each.hpp>
 #include <srook/io/bofstream.hpp>
-#include <srook/math/constants/pi.hpp>
+#include <srook/math/constants/algorithm/sqrt.hpp>
 #include <vector>
 
 namespace jpezy {
@@ -28,19 +27,10 @@ struct encoder {
         , Y_block{}
         , Cb_block{}
         , Cr_block{}
-        , cos_table{}
         , DCT_data{}
         , pre_DC{}
     {
         static_assert(rgb_size == static_cast<std::size_t>(RGB::ELEMENT_SIZE));
-
-        constexpr double pi = srook::math::pi<double>;
-
-        srook::for_each(
-            srook::make_counter(cos_table),
-            [](std::array<double, block>& ele_table, int i) {
-                srook::for_each(srook::make_counter(ele_table), [&i](double& ele, int j) { ele = std::cos((2 * j + 1) * i * (pi / 16)); });
-            });
     }
 
     template <class MODE_TAG = COLOR_MODE>
@@ -88,6 +78,9 @@ private:
     using value_type = int;
 
     static constexpr value_type block = 8;
+public: 
+	static constexpr value_type block_size = block;
+private:
     static constexpr value_type blocks_size = block * block;
     static constexpr value_type rgb_size = 3;
     static constexpr value_type mcu_size = 4;
@@ -151,7 +144,7 @@ private:
     template <class U, std::size_t s>
     void DCT(std::array<U, s>& pic) noexcept
     {
-        const double dis_sqrt = 1.0 / std::sqrt(2.0);
+        constexpr double dis_sqrt = 1.0 / srook::sqrt(2.0);
 
         for (int i = 0; i < block; ++i) {
             const double cv = i ? 1.0 : dis_sqrt;
@@ -162,7 +155,7 @@ private:
 
                 for (int y = 0; y < block; ++y) {
                     for (int x = 0; x < block; ++x) {
-                        sum += pic[y * block + x] * cos_table[j][x] * cos_table[i][y];
+                        sum += pic[y * block + x] * cos_table[j * block_size + x] * cos_table[i * block_size + y];
                     }
                 }
                 DCT_data[i * block + j] = int(sum * cu * cv / 4);
@@ -271,7 +264,7 @@ private:
     std::array<std::array<value_type, blocks_size>, mcu_size> Y_block;
     std::array<value_type, blocks_size> Cb_block, Cr_block;
 
-    std::array<std::array<double, block>, block> cos_table;
+    static constexpr std::array<double, block * block> cos_table = detail::GetCosTable<encoder<T>>::value();
 
     std::array<value_type, blocks_size> DCT_data;
     std::array<value_type, rgb_size> pre_DC;

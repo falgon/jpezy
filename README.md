@@ -85,7 +85,6 @@ output.ppm: Netpbm image data, size = 512 x 512, pixmap, ASCII text
  _/ | .__/ \___/___|\__, |
 |__/|_|             |___/       by roki
 
-make a cos table... Done! Processing time: 0(sec)
 process started...
      analyzing header...
              found marker: [APP0]

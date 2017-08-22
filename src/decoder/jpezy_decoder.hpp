@@ -4,7 +4,6 @@
 
 #include <array>
 #include <cassert>
-#include <cmath>
 #include <iostream>
 #include <string_view>
 #include <type_traits>
@@ -14,16 +13,41 @@
 #include <boost/range/algorithm/generate.hpp>
 
 #include <srook/algorithm/for_each.hpp>
+#include <srook/array/make_array.hpp>
+#include <srook/config/attribute/fallthrough.hpp>
 #include <srook/io/bifstream.hpp>
 #include <srook/iterator/ostream_joiner.hpp>
-#include <srook/math/constants/pi.hpp>
+#include <srook/math/constants/algorithm/cos.hpp>
+#include <srook/math/constants/algorithm/sqrt.hpp>
+#include <srook/mpl/constant_sequence/math/make_costable.hpp>
 #include <srook/optional.hpp>
-#include<srook/config/attribute/fallthrough.hpp>
 
 #include "../jpezy.hpp"
 #include "tables.hpp"
 
 namespace jpezy {
+
+template <class>
+struct decoder;
+
+/*namespace detail {
+
+template <class T>
+struct GetCosTable {
+    static constexpr decltype(auto) value() noexcept
+    {
+	return value(srook::constant_sequence::math::detail::make_costable_x<decoder<T>::block_size, decoder<T>::block_size>());
+    }
+
+private:
+    template <std::int64_t... v>
+    static constexpr decltype(auto) value(std::integer_sequence<std::int64_t, v...>) noexcept
+    {
+	return srook::make_array(srook::constant_sequence::math::detail::Realvalue()(v)...);
+    }
+};
+
+} // namespace detail*/
 
 template <class BuildMode = Release>
 struct decoder {
@@ -54,23 +78,11 @@ struct decoder {
 	  block{},
 	  ht{},
 	  qt{},
-	  cos_table{},
 	  bifs{filename},
 	  hmax{},
 	  vmax{},
 	  enable{false}
     {
-	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
-	    mes = std::make_unique<raii_messenger>("make a cos table...");
-
-	srook::for_each(
-	    srook::make_counter(cos_table),
-	    [](auto &x, std::size_t n) {
-		srook::for_each(
-		    srook::make_counter(x),
-		    [&n](auto &y, std::size_t m) { y = std::cos(double(2 * m + 1) * double(n) * (srook::math::pi<double> / (block_size * 2))); });
-	    });
     }
 
     static constexpr bool is_release_mode = std::is_same<Release, BuildMode>();
@@ -517,34 +529,13 @@ private:
 	    }
 
 	    // Not supported markers
-	    case MARKER::APP1:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP2:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP3:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP4:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP5:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP6:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP7:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP8:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP9:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP10:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP11:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP12:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP13:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::APP14:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::APP1: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP2: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::APP3: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP4: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::APP5: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP6: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::APP7: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP8: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::APP9: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP10: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::APP11: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP12: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::APP13: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP14: SROOK_ATTRIBUTE_FALLTHROUGH;
 	    case MARKER::APP15:
 		(bifs | srook::bifstream::Word) >> length;
 		param_offset(length);
@@ -552,62 +543,20 @@ private:
 		break;
 
 	    // reserves and other
-	    case MARKER::JPG:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG0:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG1:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG2:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG3:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG4:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG5:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG6:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG7:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG8:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG9:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG10:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG11:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG12:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::JPG13:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::TEM:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::Error:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST0:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST1:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST2:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST3:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST4:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST5:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST6:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RST7:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOI:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RESst:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::RESnd:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::JPG0: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG1: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::JPG2: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG3: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::JPG4: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG5: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::JPG6: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG7: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::JPG8: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG9: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::JPG10: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG11: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::JPG12: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::JPG13: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::TEM: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::Error: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::RST0: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::RST1: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::RST2: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::RST3: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::RST4: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::RST5: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::RST6: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::RST7: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::SOI: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::RESst: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::RESnd: SROOK_ATTRIBUTE_FALLTHROUGH;
 	    default:
 		throw std::runtime_error("Marker error");
 		break;
@@ -794,7 +743,7 @@ private:
     void inverse_dct() noexcept
     {
 	const int sl = pr.get<property::At::SamplePrecision>() == block_size ? 128 : 2048;
-	const double disqrt2 = (1.0 / std::sqrt(2));
+	constexpr double disqrt2 = (1.0 / srook::sqrt(2));
 
 	for (std::size_t y = 0; y < block_size; ++y) {
 	    for (std::size_t x = 0; x < block_size; ++x) {
@@ -804,7 +753,7 @@ private:
 		    const double cv = (!v) ? disqrt2 : 1.0;
 		    for (std::size_t u = 0; u < block_size; ++u) {
 			const double cu = (!u) ? disqrt2 : 1.0;
-			sum += cu * cv * dct[v * block_size + u] * cos_table[u][x] * cos_table[v][y];
+			sum += cu * cv * dct[v * block_size + u] * cos_table[u * block_size + x] * cos_table[v * block_size + y];
 		    }
 		}
 		block[y * block_size + x] = int(sum / 4 + sl);
@@ -818,12 +767,13 @@ private:
 	return (v < 0.0) ? 0_byte : (v > 255.0) ? 255_byte : srook::byte(v);
     }
 
-private:
+public:
     static constexpr std::size_t rgb_size = 3;
     static constexpr std::size_t block_size = 8;
     static constexpr std::size_t blocks_size = block_size * block_size;
     static constexpr std::size_t mcu_size = 4;
 
+private:
     Scan_header s_header;
     std::array<Frame_component, 3> fcomp;
     std::array<Scan_component, 3> scomp;
@@ -837,7 +787,7 @@ private:
 
     std::array<std::array<huffman_table, 4>, 2> ht;
     std::array<std::array<int, blocks_size>, mcu_size> qt;
-    std::array<std::array<double, block_size>, block_size> cos_table;
+    static constexpr std::array<double, block_size * block_size> cos_table = detail::GetCosTable<decoder<BuildMode>>::value();
 
     srook::bifstream bifs;
     std::make_signed_t<std::underlying_type_t<srook::byte>> hmax, vmax;
