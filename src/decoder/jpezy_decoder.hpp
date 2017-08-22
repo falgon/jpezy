@@ -30,25 +30,6 @@ namespace jpezy {
 template <class>
 struct decoder;
 
-/*namespace detail {
-
-template <class T>
-struct GetCosTable {
-    static constexpr decltype(auto) value() noexcept
-    {
-	return value(srook::constant_sequence::math::detail::make_costable_x<decoder<T>::block_size, decoder<T>::block_size>());
-    }
-
-private:
-    template <std::int64_t... v>
-    static constexpr decltype(auto) value(std::integer_sequence<std::int64_t, v...>) noexcept
-    {
-	return srook::make_array(srook::constant_sequence::math::detail::Realvalue()(v)...);
-    }
-};
-
-} // namespace detail*/
-
 template <class BuildMode = Release>
 struct decoder {
     explicit decoder(const char *filename)
@@ -467,34 +448,13 @@ private:
 		return property::AnalyzedResult::is_comment;
 
 	    // Not supported frames
-	    case MARKER::SOF1:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF2:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF3:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF5:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF6:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF7:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF9:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF10:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF11:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF13:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF14:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::SOF15:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::EXP:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
-	    case MARKER::DAC:
-		SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::SOF1: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::SOF2: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::SOF3: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::SOF5: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::SOF6: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::SOF7: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::SOF9: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::SOF10: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::SOF11: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::SOF13: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::SOF14: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::SOF15: SROOK_ATTRIBUTE_FALLTHROUGH;
+	    case MARKER::EXP: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::DAC: SROOK_ATTRIBUTE_FALLTHROUGH;
 	    case MARKER::DHP:
 		std::runtime_error("Not supported");
 		break;
