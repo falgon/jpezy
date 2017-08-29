@@ -14,8 +14,7 @@ namespace jpezy {
 namespace detail {
 
 template <class, class = srook::void_t<>>
-struct has_30_7_5_1_output_stream_type : std::false_type {
-};
+struct has_30_7_5_1_output_stream_type : std::false_type {};
 
 template <class T>
 struct has_30_7_5_1_output_stream_type<

@@ -13,7 +13,6 @@
 #include <boost/range/algorithm/generate.hpp>
 
 #include <srook/algorithm/for_each.hpp>
-#include <srook/array/make_array.hpp>
 #include <srook/config/attribute/fallthrough.hpp>
 #include <srook/io/bifstream.hpp>
 #include <srook/iterator/ostream_joiner.hpp>
@@ -747,7 +746,7 @@ private:
 
     std::array<std::array<huffman_table, 4>, 2> ht;
     std::array<std::array<int, blocks_size>, mcu_size> qt;
-    static constexpr std::array<double, block_size * block_size> cos_table = detail::GetCosTable<decoder<BuildMode>>::value();
+    static constexpr std::array<const double, block_size * block_size> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
 
     srook::bifstream bifs;
     std::make_signed_t<std::underlying_type_t<srook::byte>> hmax, vmax;

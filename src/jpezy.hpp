@@ -7,32 +7,11 @@
 #include <tuple>
 
 #include <boost/parameter/name.hpp>
-
-#include <srook/array/make_array.hpp>
 #include <srook/cstddef/byte.hpp>
 #include <srook/mpl/variadic_player.hpp>
-#include <srook/mpl/constant_sequence/math/make_costable.hpp>
 #include <srook/optional.hpp>
 
 namespace jpezy {
-
-namespace detail{
-
-template<class T>
-struct GetCosTable{
-	static constexpr decltype(auto) value() noexcept
-	{
-		return value(srook::constant_sequence::math::detail::make_costable_x<T::block_size,T::block_size>());
-	}
-private:
-	template<std::int64_t... v>
-	static constexpr decltype(auto) value(std::integer_sequence<std::int64_t, v...>) noexcept
-	{
-		return srook::make_array(srook::constant_sequence::math::detail::Realvalue()(v)...);
-	}
-};
-
-} // namespace detail
 
 void disp_logo()
 {

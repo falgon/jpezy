@@ -13,6 +13,7 @@
 #include <srook/algorithm/for_each.hpp>
 #include <srook/io/bofstream.hpp>
 #include <srook/math/constants/algorithm/sqrt.hpp>
+#include <srook/mpl/constant_sequence/math/make_costable.hpp>
 #include <vector>
 
 namespace jpezy {
@@ -264,7 +265,7 @@ private:
     std::array<std::array<value_type, blocks_size>, mcu_size> Y_block;
     std::array<value_type, blocks_size> Cb_block, Cr_block;
 
-    static constexpr std::array<double, block * block> cos_table = detail::GetCosTable<encoder<T>>::value();
+    static constexpr std::array<const double, block * block> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
 
     std::array<value_type, blocks_size> DCT_data;
     std::array<value_type, rgb_size> pre_DC;
