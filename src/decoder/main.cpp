@@ -4,7 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <srook/optional.hpp>
-#include <string_view>
+#include <srook/string/string_view.hpp>
 
 decltype(EXIT_FAILURE) disp_error() noexcept(false)
 {

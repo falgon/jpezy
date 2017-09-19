@@ -5,7 +5,7 @@
 #include <array>
 #include <cassert>
 #include <iostream>
-#include <string_view>
+#include <srook/string/string_view.hpp>
 #include <type_traits>
 #include <vector>
 
@@ -464,8 +464,8 @@ private:
 		(bifs | srook::bifstream::Word) >> length;
 		param_offset(length);
 
-		if (static constexpr char JFIF[] = "JFIF", JFXX[] = "JFXX"; std::string_view(JFIF).size() == std::string_view(JFXX).size()) {
-		    if (const std::size_t size = std::string_view(JFIF).size(); length >= signed(size)) {
+		if (static constexpr char JFIF[] = "JFIF", JFXX[] = "JFXX"; srook::string_view(JFIF).size() == srook::string_view(JFXX).size()) {
+		    if (const std::size_t size = srook::string_view(JFIF).size(); length >= signed(size)) {
 			std::string id;
 			id.resize(size + 1);
 			(bifs | srook::bifstream::Bytes) >> id;
