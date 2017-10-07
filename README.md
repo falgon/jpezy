@@ -6,6 +6,7 @@
  _/ | .__/ \___/___|\__, |
 |__/|_|             |___/
 ```
+[![Build Status](https://travis-ci.org/falgon/jpezy.svg?branch=master)](https://travis-ci.org/falgon/jpezy)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ae48c146f92e4fb088116091727440ad)](https://www.codacy.com/app/falgon/jpezy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=falgon/jpezy&amp;utm_campaign=Badge_Grade)
 
 
@@ -61,8 +62,7 @@ output.jpg: JPEG image data, JFIF standard 1.02, resolution (DPI), density 96x96
 ### Decoder
 The following is an example of the result that compressed [The Standart Test Images of Lena](http://www.ece.rise.edu/~wakin/images).
 ```
-% convert -compress none lena512color.tiff lena.ppm
-% ./jpeg_decode lena.jpg output.ppm
+% ./jpezy_decode lena.jpg output.ppm
    _
   (_)_ __   ___ _____   _
   | | '_ \ / _ \_  / | | |
@@ -77,7 +77,7 @@ Done! Processing time: 0.055(sec)
 Decoded image: Netpbm image data, size = 512 x 512, pixmap, ASCII text
 % file output.ppm
 output.ppm: Netpbm image data, size = 512 x 512, pixmap, ASCII text
-% ./jpeg_decode lena.jpg output.ppm -v
+% ./jpezy_decode lena.jpg output.ppm -v
    _
   (_)_ __   ___ _____   _
   | | '_ \ / _ \_  / | | |

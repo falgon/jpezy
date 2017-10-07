@@ -1,0 +1,30 @@
+language: cpp
+script:
+        - g++-7 --version
+        - mkdir build && cd build
+        - cmake -DCMAKE_BUILD_TYPE=Release ..
+        - make
+        - wget https://www.ece.rice.edu/~wakin/images/lena512color.tiff
+        - convert -compress none lena512color.tiff lena.ppm
+        - ./jpezy_encode lena.ppm lena.jpg
+        - file lena.jpg
+        - ./jpezy_decode lena.jpg output.ppm
+        - file lena.ppm
+        - make clean
+compiler:
+        - gcc-7
+before_install:
+    - sudo apt remove -qq -y postgresql-9.1 postgresql-9.2 postgresql-9.3 postgresql-9.4 postgresql-9.6 postgresql-contrib-9.6
+    - sudo apt -qq -y update
+    - sudo apt -qq upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+    - sudo apt -qq dist-upgrade -y
+install:
+    - sudo apt -qq -y install build-essential software-properties-common 
+    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    - sudo apt -qq -y update
+    - sudo apt -qq -y install gcc-7 g++-7
+    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 60 --slave /usr/bin/g++ g++ /usr/bin/g++-7
+    - sudo update-alternatives --config gcc
+    - sudo apt -qq -y install cppcheck
+    - sudo apt -qq -y install libboost-all-dev
+    - sudo apt -qq -y install imagemagick

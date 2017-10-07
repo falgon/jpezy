@@ -1,5 +1,10 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.2)
 include(compiler_settings.cmake)
-include_directories(/$(HOME)/Documents/src/cpp/IncludeLibraries)
+include(get_srookcpp.cmake)
+include(get_boost.cmake)
+include_directories(${EXTERNAL_INSTALL_LOCATION}/SrookCppLibraries)
+
 add_executable(jpezy_encode src/encoder/main.cpp)
 add_executable(jpezy_decode src/decoder/main.cpp)
+add_dependencies(jpezy_encode SrookCppLibraries)
+add_dependencies(jpezy_decode SrookCppLibraries)
