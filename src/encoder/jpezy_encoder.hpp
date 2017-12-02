@@ -4,13 +4,14 @@
 #include "../jpezy.hpp"
 #include "huffman_table.hpp"
 #include "jpezy_writer.hpp"
-#include <array>
+//#include <array>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/algorithm/fill.hpp>
 #include <chrono>
 #include <experimental/iterator>
 #include <iostream>
 #include <srook/algorithm/for_each.hpp>
+#include <srook/array.hpp>
 #include <srook/io/bofstream.hpp>
 #include <srook/math/constants/algorithm/sqrt.hpp>
 #include <srook/mpl/constant_sequence/math/make_costable.hpp>
@@ -143,7 +144,7 @@ private:
     }
 
     template <class U, std::size_t s>
-    void DCT(std::array<U, s>& pic) noexcept
+    void DCT(srook::array<U, s>& pic) noexcept
     {
         constexpr double dis_sqrt = 1.0 / srook::sqrt(2.0);
 
@@ -166,7 +167,7 @@ private:
 
     void quantization(int cs) noexcept
     {
-        const std::array<int, 64>& qt = cs ? CQuantumTb : YQuantumTb;
+        const srook::array<int, 64>& qt = cs ? CQuantumTb : YQuantumTb;
         srook::for_each(srook::make_counter(DCT_data), [&qt](auto& v, std::size_t i) { v /= qt[i]; });
     }
 
@@ -262,13 +263,13 @@ private:
     const property& pr;
     const std::vector<T> r, g, b;
 
-    std::array<std::array<value_type, blocks_size>, mcu_size> Y_block;
-    std::array<value_type, blocks_size> Cb_block, Cr_block;
+    srook::array<srook::array<value_type, blocks_size>, mcu_size> Y_block;
+    srook::array<value_type, blocks_size> Cb_block, Cr_block;
 
-    static constexpr std::array<const double, block * block> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
+    static constexpr srook::array<const double, block * block> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
 
-    std::array<value_type, blocks_size> DCT_data;
-    std::array<value_type, rgb_size> pre_DC;
+    srook::array<value_type, blocks_size> DCT_data;
+    srook::array<value_type, rgb_size> pre_DC;
 };
 
 template <class T>

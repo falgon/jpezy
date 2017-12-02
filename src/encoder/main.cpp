@@ -1,4 +1,5 @@
 #include "encode_io.hpp"
+#include <srook/string/string_view.hpp>
 
 decltype(EXIT_FAILURE) disp_error() noexcept(false)
 {
@@ -58,21 +59,21 @@ int main(const int argc, const char* argv[])
 
     Mode m1 = Mode::UD, m2 = Mode::UD;
 
-    const std::string_view sv1 = argv[2];
-    srook::optional<std::string_view> sv2 = srook::nullopt;
+    const srook::string_view sv1 = argv[2];
+    srook::optional<srook::string_view> sv2 = srook::nullopt;
 
     if (argc > 2) {
         sv2 = argv[3];
     }
 
-    if (sv1.find("jpeg", sv1.find_first_of('.')) != std::string_view::npos or sv1.find("jpg", sv1.find_first_of('.')) != std::string_view::npos) {
+    if (sv1.find("jpeg", sv1.find_first_of('.')) != srook::string_view::npos or sv1.find("jpg", sv1.find_first_of('.')) != srook::string_view::npos) {
         m1 = Mode::JPEG;
         if (sv2) {
-            if (sv2.value().find("--gray") != std::string_view::npos) {
+            if (sv2.value().find("--gray") != srook::string_view::npos) {
                 m2 = Mode::GRAY;
             }
         }
-    } else if (sv1.find("ppm", sv1.find_first_of('.')) != std::string_view::npos) {
+    } else if (sv1.find("ppm", sv1.find_first_of('.')) != srook::string_view::npos) {
         m1 = Mode::PPM;
     } else if (!sv1.compare("--debug")) {
         m1 = Mode::DEBUG;

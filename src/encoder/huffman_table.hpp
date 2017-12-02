@@ -8,14 +8,14 @@ namespace jpezy {
 template <class T, std::size_t s>
 struct huffmanCode_Tb {
     using value_type = T;
-    explicit constexpr huffmanCode_Tb(const std::array<T, s>& size, const std::array<T, s>& code)
+    explicit constexpr huffmanCode_Tb(const srook::array<T, s>& size, const srook::array<T, s>& code)
         : size_tb(size)
         , code_tb(code)
     {
     }
 
-    const std::array<T, s>& size_tb;
-    const std::array<T, s>& code_tb;
+    const srook::array<T, s>& size_tb;
+    const srook::array<T, s>& code_tb;
 
     constexpr std::size_t size() const noexcept
     {
@@ -23,12 +23,12 @@ struct huffmanCode_Tb {
     }
 };
 template <class T, std::size_t s>
-explicit huffmanCode_Tb(const std::array<T, s>&, const std::array<T, s>&) -> huffmanCode_Tb<T, s>;
+explicit huffmanCode_Tb(const srook::array<T, s>&, const srook::array<T, s>&) -> huffmanCode_Tb<T, s>;
 
 // ISO/IEC 10918-1:1993(E)
 
 // Table K.3  - Table for luminance DC coefficient differences
-using YCDc_type = std::array<int, 12>;
+using YCDc_type = srook::array<int, 12>;
 static const YCDc_type YDcSizeT{
     0x0002, 0x0003, 0x0003, 0x0003,
     0x0003, 0x0003, 0x0004, 0x0005,
@@ -55,7 +55,7 @@ static const YCDc_type CDcCodeT{
 static const huffmanCode_Tb CDcHuffmanT{ CDcSizeT, CDcCodeT };
 
 // Table K.5 - Table for luminance AC coefficient(sheet 1 - 4)
-using YCAc_type = std::array<int, 162>;
+using YCAc_type = srook::array<int, 162>;
 
 static const YCAc_type YAcSizeT{
     4, 2, 2, 3, 4, 5, 7, 8,
@@ -205,7 +205,7 @@ static const int CZRLidx = 151;
 static const int DcDhtLength = 0x21;
 static const int AcDhtLength = 0xb7;
 
-using YDCD_t = std::array<srook::byte, 33>;
+using YDCD_t = srook::array<srook::byte, 33>;
 using namespace srook::literals::byte_literals;
 
 static const YDCD_t YDcDht{
@@ -228,7 +228,7 @@ static const YDCD_t CDcDht{
     0x08_byte, 0x09_byte, 0x0a_byte, 0x0b_byte
 };
 
-using YCAc_t = std::array<srook::byte, 183>;
+using YCAc_t = srook::array<srook::byte, 183>;
 
 static const YCAc_t YAcDht{
     0xff_byte, 0xc4_byte,

@@ -68,7 +68,7 @@ struct decoder {
     static constexpr bool is_release_mode = std::is_same<Release, BuildMode>();
 
     template <class MODE_TAG = COLOR_MODE>
-    srook::optional<std::array<std::vector<srook::byte>, 3>> decode()
+    srook::optional<srook::array<std::vector<srook::byte>, 3>, srook::optionally::safe_optional_payload> decode()
     {
 	raii_messenger mes("process started...");
 	std::cout << '\n';
@@ -218,7 +218,7 @@ private:
 
 	    huffman_table &ht_ = ht[tc][th];
 
-	    std::array<std::underlying_type_t<srook::byte>, block_size * 2> cc{};
+	    srook::array<std::underlying_type_t<srook::byte>, block_size * 2> cc{};
 	    std::size_t n_ = 0;
 	    boost::generate(cc, [this, &n_]() {std::underlying_type_t<srook::byte> b{}; (bifs | srook::bifstream::Byte) >> b; n_ += b; return b; });
 
@@ -734,19 +734,19 @@ public:
 
 private:
     Scan_header s_header;
-    std::array<Frame_component, 3> fcomp;
-    std::array<Scan_component, 3> scomp;
+    srook::array<Frame_component, 3> fcomp;
+    srook::array<Scan_component, 3> scomp;
 
     std::size_t restart_interval;
-    std::array<std::vector<srook::byte>, rgb_size> rgb;
-    std::array<std::vector<int>, rgb_size> comp;
-    std::array<int, rgb_size> pred_dct;
-    std::array<int, blocks_size> dct;
-    std::array<int, blocks_size> block;
+    srook::array<std::vector<srook::byte>, rgb_size> rgb;
+    srook::array<std::vector<int>, rgb_size> comp;
+    srook::array<int, rgb_size> pred_dct;
+    srook::array<int, blocks_size> dct;
+    srook::array<int, blocks_size> block;
 
-    std::array<std::array<huffman_table, 4>, 2> ht;
-    std::array<std::array<int, blocks_size>, mcu_size> qt;
-    static constexpr std::array<const double, block_size * block_size> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
+    srook::array<srook::array<huffman_table, 4>, 2> ht;
+    srook::array<srook::array<int, blocks_size>, mcu_size> qt;
+    static constexpr srook::array<const double, block_size * block_size> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
 
     srook::bifstream bifs;
     std::make_signed_t<std::underlying_type_t<srook::byte>> hmax, vmax;

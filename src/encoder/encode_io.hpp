@@ -2,7 +2,7 @@
 #define INCLUDED_JPEZY_ENCODE_IO_HPP
 
 #include <algorithm>
-#include <experimental/array>
+#include <srook/array.hpp>
 #include <experimental/iterator>
 #include <fstream>
 #include <iostream>
@@ -87,7 +87,7 @@ struct encode_io : pnm_stream {
                             cl = img.front();
                             img.pop_front();
                         }
-                        v = std::experimental::make_array(r, g, b);
+                        v = srook::make_array(r, g, b);
                     }
                 }
                 std::cout << "width: " << width << " height: " << height << std::endl;
@@ -121,7 +121,7 @@ private:
         srook::for_each(
             srook::make_counter({ std::ref(r), std::ref(g), std::ref(b) }),
             [this](std::vector<rgb_type>& element, std::size_t i) {
-                boost::transform(rgb_img, std::begin(element), [&i](const std::array<rgb_type, 3>& ar) { return srook::byte(ar[i]); });
+                boost::transform(rgb_img, std::begin(element), [&i](const srook::array<rgb_type, 3>& ar) { return srook::byte(ar[i]); });
             });
 
         return std::make_tuple(r, g, b);

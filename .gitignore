@@ -36,3 +36,6 @@
 # Image
 *.jpg
 *.jpeg
+
+# dir
+build

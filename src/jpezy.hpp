@@ -1,12 +1,13 @@
 #ifndef INCLUDED_JPEZY_JPEG_HPP
 #define INCLUDED_JPEZY_JPEG_HPP
-#include <array>
+//#include <array>
 #include <chrono>
 #include <iostream>
 #include <string>
 #include <tuple>
 
 #include <boost/parameter/name.hpp>
+#include <srook/array.hpp>
 #include <srook/cstddef/byte.hpp>
 #include <srook/mpl/variadic_player.hpp>
 #include <srook/optional.hpp>
@@ -29,7 +30,7 @@ struct Debug;
 struct COLOR_MODE;
 struct GRAY_MODE;
 
-const std::array<int, 64> ZZ{
+const srook::array<int, 64> ZZ{
     { 0, 1, 8, 16, 9, 2, 3, 10,
 		17, 24, 32, 25, 18, 11, 4, 5,
         12, 19, 26, 33, 40, 48, 41, 34,
@@ -123,7 +124,7 @@ enum class MARKER {
 
 // ISO/IEC 10918-1:1993(E)
 // Table K.1 - Luminance quantization table
-static const std::array<int, 64> YQuantumTb{
+static const srook::array<int, 64> YQuantumTb{
     { 16, 11, 10, 16, 24, 40, 51, 61,
         12, 12, 14, 19, 26, 58, 60, 55,
         14, 13, 16, 24, 40, 57, 69, 56,
@@ -135,7 +136,7 @@ static const std::array<int, 64> YQuantumTb{
 };
 
 // Table K.2 - Chrominance quantization table
-static const std::array<int, 64> CQuantumTb{
+static const srook::array<int, 64> CQuantumTb{
     { 17, 18, 24, 47, 99, 99, 99, 99,
         18, 21, 26, 66, 99, 99, 99, 99,
         24, 26, 56, 99, 99, 99, 99, 99,

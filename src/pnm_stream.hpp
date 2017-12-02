@@ -13,16 +13,12 @@ struct pnm_stream {
         : initializing_succeed(true)
         , width(0)
         , height(0)
-        , max_color(0)
-    {
-    }
+        , max_color(0) {}
     pnm_stream(bool b, std::size_t w, std::size_t h, std::size_t max)
         : initializing_succeed(b)
         , width(w)
         , height(h)
-        , max_color(max)
-    {
-    }
+        , max_color(max) {}
 
     explicit operator bool() const noexcept
     {
@@ -35,7 +31,7 @@ protected:
 
     bool initializing_succeed;
     std::size_t width, height, max_color;
-    std::vector<std::array<rgb_type, 3>> rgb_img;
+    std::vector<srook::array<rgb_type, 3>> rgb_img;
 
     inline void report_error(const char* funcName) const noexcept(false)
     {
