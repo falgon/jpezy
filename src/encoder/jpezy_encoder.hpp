@@ -4,7 +4,6 @@
 #include "../jpezy.hpp"
 #include "huffman_table.hpp"
 #include "jpezy_writer.hpp"
-//#include <array>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/algorithm/fill.hpp>
 #include <chrono>
@@ -172,7 +171,7 @@ private:
     }
 
     template <class U, std::size_t dcs, std::size_t acs>
-    void encode_huffman(int cs, srook::bofstream& ofs, const huffmanCode_Tb<U, dcs>& dcT, const huffmanCode_Tb<U, acs>& acT, int eob_idx, int zrl_idx) noexcept(false)
+    void encode_huffman(int cs, srook::io::jpeg::bofstream& ofs, const huffmanCode_Tb<U, dcs>& dcT, const huffmanCode_Tb<U, acs>& acT, int eob_idx, int zrl_idx) noexcept(false)
     {
         const decltype(DCT_data)& dct_data = DCT_data;
 
@@ -186,9 +185,9 @@ private:
         if (di > static_cast<signed>(dcT.size()))
             throw std::runtime_error(__func__);
 
-        (ofs | srook::bofstream::Bits(dcT.size_tb[di])) << dcT.code_tb[di];
+        (ofs | srook::io::jpeg::bofstream::Bits(dcT.size_tb[di])) << dcT.code_tb[di];
         if (di)
-            (ofs | srook::bofstream::Bits(di)) << (diff < 0 ? diff - 1 : diff);
+            (ofs | srook::io::jpeg::bofstream::Bits(di)) << (diff < 0 ? diff - 1 : diff);
 
         // AC
         for (std::size_t n = 1, run = 0; n < blocks_size; ++n) {
@@ -196,7 +195,7 @@ private:
 
             if (abs_coefficient) {
                 while (run > 15) {
-                    (ofs | srook::bofstream::Bits(acT.size_tb[zrl_idx])) << acT.code_tb[zrl_idx];
+                    (ofs | srook::io::jpeg::bofstream::Bits(acT.size_tb[zrl_idx])) << acT.code_tb[zrl_idx];
                     run -= 16;
                 }
                 int s = 0;
@@ -207,24 +206,24 @@ private:
                 if (a_di >= static_cast<signed>(acT.size()))
                     throw std::runtime_error(__func__);
 
-                (ofs | srook::bofstream::Bits(acT.size_tb[a_di])) << acT.code_tb[a_di];
+                (ofs | srook::io::jpeg::bofstream::Bits(acT.size_tb[a_di])) << acT.code_tb[a_di];
 
                 int v = dct_data[ZZ[n]];
                 if (v < 0)
                     --v;
 
-                (ofs | srook::bofstream::Bits(s)) << v;
+                (ofs | srook::io::jpeg::bofstream::Bits(s)) << v;
                 run = 0;
             } else {
                 if (n == 63)
-                    (ofs | srook::bofstream::Bits(acT.size_tb[eob_idx])) << acT.code_tb[eob_idx];
+                    (ofs | srook::io::jpeg::bofstream::Bits(acT.size_tb[eob_idx])) << acT.code_tb[eob_idx];
                 else
                     ++run;
             }
         }
     }
 
-    void make_MCU(srook::bofstream& ofps) noexcept(false)
+    void make_MCU(srook::io::jpeg::bofstream& ofps) noexcept(false)
     {
         for (auto& v : Y_block) {
             DCT(v);

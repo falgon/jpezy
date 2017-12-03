@@ -205,7 +205,7 @@ private:
 
 	do {
 	    std::underlying_type_t<srook::byte> uc{};
-	    (bifs | srook::bifstream::Byte) >> uc;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> uc;
 
 	    const std::size_t tc = uc >> 4, th = uc & 0x0f;
 
@@ -220,7 +220,7 @@ private:
 
 	    srook::array<std::underlying_type_t<srook::byte>, block_size * 2> cc{};
 	    std::size_t n_ = 0;
-	    boost::generate(cc, [this, &n_]() {std::underlying_type_t<srook::byte> b{}; (bifs | srook::bifstream::Byte) >> b; n_ += b; return b; });
+	    boost::generate(cc, [this, &n_]() {std::underlying_type_t<srook::byte> b{}; (bifs | srook::io::jpeg::bifstream::Byte) >> b; n_ += b; return b; });
 
 	    if constexpr (std::is_same<BuildMode, Debug>())
 		std::cout << " size: " << n_ << std::endl;
@@ -252,7 +252,7 @@ private:
 		} while (ht_.sizeTP[k] != si);
 	    }
 	    for (std::size_t k = 0; k < n; ++k)
-		(bifs | srook::bifstream::Byte) >> ht_.valueTP[k];
+		(bifs | srook::io::jpeg::bifstream::Byte) >> ht_.valueTP[k];
 
 	    if constexpr (std::is_same<BuildMode, Debug>()) {
 		switch (n) {
@@ -280,17 +280,17 @@ private:
 	const srook::byte *const end_add = bifs.next_address() + size;
 	std::underlying_type_t<srook::byte> c{};
 	do {
-	    (bifs | srook::bifstream::Byte) >> c;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
 
 	    if (typename decltype(qt)::value_type::iterator iter = std::begin(qt[c & 0x3]); !(c >> 4)) {
 		std::underlying_type_t<srook::byte> t{};
 		for (std::size_t i = 0; i < blocks_size; ++i) {
-		    (bifs | srook::bifstream::Byte) >> t;
+		    (bifs | srook::io::jpeg::bifstream::Byte) >> t;
 		    iter[ZZ[i]] = int(t);
 		}
 	    } else {
 		for (std::size_t i = 0; i < blocks_size; ++i)
-		    (bifs | srook::bifstream::Word) >> iter[ZZ[i]];
+		    (bifs | srook::io::jpeg::bifstream::Word) >> iter[ZZ[i]];
 	    }
 	} while (bifs.next_address() < end_add);
     }
@@ -303,10 +303,10 @@ private:
 
 	using namespace srook::literals::byte_literals;
 
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::SamplePrecision>();
-	(bifs | srook::bifstream::Word) >> pr.get<property::At::VSize>();
-	(bifs | srook::bifstream::Word) >> pr.get<property::At::HSize>();
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::Dimension>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::SamplePrecision>();
+	(bifs | srook::io::jpeg::bifstream::Word) >> pr.get<property::At::VSize>();
+	(bifs | srook::io::jpeg::bifstream::Word) >> pr.get<property::At::HSize>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::Dimension>();
 	if (pr.get<property::At::Dimension>() != 3 and pr.get<property::At::Dimension>() != 1)
 	    throw std::runtime_error("Sorry, this dimension size is not supported");
 
@@ -315,8 +315,8 @@ private:
 	}
 
 	for (auto[i, c] = std::make_tuple(0u, 0_byte); i < std::size_t(pr.get<property::At::Dimension>()); ++i) {
-	    (bifs | srook::bifstream::Byte) >> fcomp[i].C;
-	    (bifs | srook::bifstream::Byte) >> c;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> fcomp[i].C;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
 
 	    fcomp[i].H = typename get_character<srook::byte>::type(c >> 4);
 	    if (fcomp[i].H > hmax)
@@ -325,7 +325,7 @@ private:
 	    if (fcomp[i].V > vmax)
 		vmax = fcomp[i].V;
 
-	    (bifs | srook::bifstream::Byte) >> fcomp[i].Tq;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> fcomp[i].Tq;
 	}
     }
 
@@ -336,11 +336,11 @@ private:
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing scan data...");
 
 	srook::byte c{};
-	(bifs | srook::bifstream::Byte) >> s_header.scan_comp;
+	(bifs | srook::io::jpeg::bifstream::Byte) >> s_header.scan_comp;
 
 	for (std::size_t i = 0; i < srook::to_integer<std::size_t>(s_header.scan_comp); ++i) {
-	    (bifs | srook::bifstream::Byte) >> scomp[i].Cs;
-	    (bifs | srook::bifstream::Byte) >> c;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> scomp[i].Cs;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
 
 	    scomp[i].Td = srook::to_integer<std::underlying_type_t<srook::byte>>(c >> 4);
 	    if (scomp[i].Td > 2)
@@ -353,9 +353,9 @@ private:
 
 	// unused for DCT
 	{
-	    (bifs | srook::bifstream::Byte) >> s_header.spectral_begin;
-	    (bifs | srook::bifstream::Byte) >> s_header.spectral_end;
-	    (bifs | srook::bifstream::Byte) >> c;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> s_header.spectral_begin;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> s_header.spectral_end;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
 	    s_header.Ah = srook::to_integer<typename get_character<srook::byte>::type>(c >> 4);
 	    s_header.Al = srook::to_integer<std::underlying_type_t<srook::byte>>(c) & 0xf;
 	}
@@ -368,13 +368,13 @@ private:
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing jfif...");
 
 	pr.get<property::At::Format>() = property::Format::JFIF;
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::MajorRevisions>();
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::MinorRevisions>();
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::Units>();
-	(bifs | srook::bifstream::Word) >> pr.get<property::At::HDensity>();
-	(bifs | srook::bifstream::Word) >> pr.get<property::At::VDensity>();
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::HThumbnail>();
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::VThumbnail>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::MajorRevisions>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::MinorRevisions>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::Units>();
+	(bifs | srook::io::jpeg::bifstream::Word) >> pr.get<property::At::HDensity>();
+	(bifs | srook::io::jpeg::bifstream::Word) >> pr.get<property::At::VDensity>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::HThumbnail>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::VThumbnail>();
 	pr.get<property::At::Decodable>() |= property::AnalyzedResult::is_jfif;
     }
 
@@ -385,7 +385,7 @@ private:
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing jfxx...");
 
 	pr.get<property::At::Format>() = property::Format::JFXX;
-	(bifs | srook::bifstream::Byte) >> pr.get<property::At::ExtensionCode>();
+	(bifs | srook::io::jpeg::bifstream::Byte) >> pr.get<property::At::ExtensionCode>();
     }
 
     int analyze_marker()
@@ -398,26 +398,26 @@ private:
 	    case MARKER::SOF0:
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [SOF0]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		analyze_frame();
 		break;
 	    case MARKER::DHT:
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DHT]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
 		analyze_dht(length);
 		return property::AnalyzedResult::is_htable;
 	    case MARKER::DNL:
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DNL]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
-		(bifs | srook::bifstream::Word) >> pr.get<property::At::VSize>();
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> pr.get<property::At::VSize>();
 		break;
 	    case MARKER::DQT:
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DQT]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
 		analyze_dqt(length);
 		return property::AnalyzedResult::is_qtable;
@@ -429,21 +429,21 @@ private:
 	    case MARKER::SOS:
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [SOS]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		analyze_scan();
 		return property::AnalyzedResult::is_start_data;
 	    case MARKER::DRI:
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DRI]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
-		(bifs | srook::bifstream::Word) >> restart_interval;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> restart_interval;
 		break;
 	    case MARKER::COM:
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [COM]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
-		(bifs | srook::bifstream::Byte_n(length)) >> pr.get<property::At::Comment>();
+		(bifs | srook::io::jpeg::bifstream::Byte_n(length)) >> pr.get<property::At::Comment>();
 		return property::AnalyzedResult::is_comment;
 
 	    // Not supported frames
@@ -461,14 +461,14 @@ private:
 	    case MARKER::APP0: {
 		if constexpr (std::is_same<BuildMode, Debug>())
 		    std::cout << "\n\t\tfound marker: [APP0]" << std::endl;
-		(bifs | srook::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
 
 		if (static constexpr char JFIF[] = "JFIF", JFXX[] = "JFXX"; srook::string_view(JFIF).size() == srook::string_view(JFXX).size()) {
 		    if (const std::size_t size = srook::string_view(JFIF).size(); length >= signed(size)) {
 			std::string id;
 			id.resize(size + 1);
-			(bifs | srook::bifstream::Bytes) >> id;
+			(bifs | srook::io::jpeg::bifstream::Bytes) >> id;
 			id.pop_back();
 
 			if (id == JFIF) {
@@ -496,7 +496,7 @@ private:
 	    case MARKER::APP11: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP12: SROOK_ATTRIBUTE_FALLTHROUGH;
 	    case MARKER::APP13: SROOK_ATTRIBUTE_FALLTHROUGH; case MARKER::APP14: SROOK_ATTRIBUTE_FALLTHROUGH;
 	    case MARKER::APP15:
-		(bifs | srook::bifstream::Word) >> length;
+		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
 		bifs.skip_byte(length);
 		break;
@@ -526,9 +526,9 @@ private:
     MARKER get_marker()
     {
 	for (std::underlying_type_t<srook::byte> c{};;) {
-	    (bifs | srook::bifstream::Byte) >> c;
+	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
 	    if (c == std::underlying_type_t<srook::byte>(MARKER::Marker)) {
-		(bifs | srook::bifstream::Byte) >> c;
+		(bifs | srook::io::jpeg::bifstream::Byte) >> c;
 		if (c) {
 		    if ((c > std::underlying_type_t<srook::byte>(MARKER::RESst)) and (c < std::underlying_type_t<srook::byte>(MARKER::SOF0))) {
 			return MARKER::Error;
@@ -626,7 +626,7 @@ private:
 	int category = decode_huffman_impl<DC>(sc);
 
 	if (category > 0) {
-	    (bifs | srook::bifstream::Bits(category)) >> dc_diff;
+	    (bifs | srook::io::jpeg::bifstream::Bits(category)) >> dc_diff;
 	    if ((dc_diff & (1 << (category - 1))) == 0) {
 		dc_diff -= (1 << category) - 1;
 	    }
@@ -652,7 +652,7 @@ private:
 
 	    int acv = 0;
 	    if (category) {
-		(bifs | srook::bifstream::Bits(category)) >> acv;
+		(bifs | srook::io::jpeg::bifstream::Bits(category)) >> acv;
 		if (!(acv & (1 << (category - 1)))) {
 		    acv -= (1 << category) - 1;
 		}
@@ -678,7 +678,7 @@ private:
 	for (auto[code, length, next, k] = std::make_tuple(0, 0u, 0, 0u); k < ht_.size() and length < (block_size * 2);) {
 	    ++length;
 	    code <<= 1;
-	    (bifs | srook::bifstream::Bits(1)) >> next;
+	    (bifs | srook::io::jpeg::bifstream::Bits(1)) >> next;
 	    if (next < 0)
 		return next;
 	    code |= next;
@@ -748,7 +748,7 @@ private:
     srook::array<srook::array<int, blocks_size>, mcu_size> qt;
     static constexpr srook::array<const double, block_size * block_size> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
 
-    srook::bifstream bifs;
+    srook::io::jpeg::bifstream bifs;
     std::make_signed_t<std::underlying_type_t<srook::byte>> hmax, vmax;
     bool enable;
 };
