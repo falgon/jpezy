@@ -1,6 +1,5 @@
 #ifndef INCLUDED_JPEZY_JPEG_HPP
 #define INCLUDED_JPEZY_JPEG_HPP
-//#include <array>
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -9,6 +8,7 @@
 #include <boost/parameter/name.hpp>
 #include <srook/array.hpp>
 #include <srook/cstddef/byte.hpp>
+#include <srook/config/feature/if_constexpr.hpp>
 #include <srook/mpl/variadic_player.hpp>
 #include <srook/optional.hpp>
 
@@ -16,11 +16,11 @@ namespace jpezy {
 
 void disp_logo()
 {
-    std::cout << "   _" << std::endl;
-    std::cout << "  (_)_ __   ___ _____   _" << std::endl;
-    std::cout << "  | | '_ \\ / _ \\_  / | | | " << std::endl;
-    std::cout << "  | | |_) |  __// /| |_| |" << std::endl;
-    std::cout << " _/ | .__/ \\___/___|\\__, |" << std::endl;
+    std::cout << "   _\n";
+    std::cout << "  (_)_ __   ___ _____   _\n";
+    std::cout << "  | | '_ \\ / _ \\_  / | | | \n";
+    std::cout << "  | | |_) |  __// /| |_| |\n";
+    std::cout << " _/ | .__/ \\___/___|\\__, |\n";
     std::cout << "|__/|_|             |___/\tby roki\n"
               << std::endl;
 }
@@ -227,35 +227,35 @@ struct property {
     template <At at>
     const auto& get() const noexcept
     {
-        if constexpr (at == At::HSize) {
+        SROOK_IF_CONSTEXPR (at == At::HSize) {
             return width;
-        } else if constexpr (at == At::VSize) {
+        } else SROOK_IF_CONSTEXPR (at == At::VSize) {
             return height;
-        } else if constexpr (at == At::Dimension) {
+        } else SROOK_IF_CONSTEXPR (at == At::Dimension) {
             return dimension;
-        } else if constexpr (at == At::SamplePrecision) {
+        } else SROOK_IF_CONSTEXPR (at == At::SamplePrecision) {
             return sample_precision;
-        } else if constexpr (at == At::Comment) {
+        } else SROOK_IF_CONSTEXPR (at == At::Comment) {
             return comment;
-        } else if constexpr (at == At::Format) {
+        } else SROOK_IF_CONSTEXPR (at == At::Format) {
             return format;
-        } else if constexpr (at == At::MajorRevisions) {
+        } else SROOK_IF_CONSTEXPR (at == At::MajorRevisions) {
             return major_rev;
-        } else if constexpr (at == At::MinorRevisions) {
+        } else SROOK_IF_CONSTEXPR (at == At::MinorRevisions) {
             return minor_rev;
-        } else if constexpr (at == At::Units) {
+        } else SROOK_IF_CONSTEXPR (at == At::Units) {
             return uni;
-        } else if constexpr (at == At::HDensity) {
+        } else SROOK_IF_CONSTEXPR (at == At::HDensity) {
             return width_density;
-        } else if constexpr (at == At::VDensity) {
+        } else SROOK_IF_CONSTEXPR (at == At::VDensity) {
             return height_density;
-        } else if constexpr (at == At::HThumbnail) {
+        } else SROOK_IF_CONSTEXPR (at == At::HThumbnail) {
             return width_thumbnail;
-        } else if constexpr (at == At::VThumbnail) {
+        } else SROOK_IF_CONSTEXPR (at == At::VThumbnail) {
             return height_thumbnail;
-        } else if constexpr (at == At::ExtensionCode) {
+        } else SROOK_IF_CONSTEXPR (at == At::ExtensionCode) {
             return ext;
-        } else if constexpr (at == At::Decodable) {
+        } else SROOK_IF_CONSTEXPR (at == At::Decodable) {
             return decodable;
         }
     }
@@ -263,35 +263,35 @@ struct property {
     template <std::size_t at>
     const auto& get() const noexcept
     {
-        if constexpr (at == 0) {
+        SROOK_IF_CONSTEXPR (at == 0) {
             return width;
-        } else if constexpr (at == 1) {
+        } else SROOK_IF_CONSTEXPR (at == 1) {
             return height;
-        } else if constexpr (at == 2) {
+        } else SROOK_IF_CONSTEXPR (at == 2) {
             return dimension;
-        } else if constexpr (at == 3) {
+        } else SROOK_IF_CONSTEXPR (at == 3) {
             return sample_precision;
-        } else if constexpr (at == 4) {
+        } else SROOK_IF_CONSTEXPR (at == 4) {
             return comment;
-        } else if constexpr (at == 5) {
+        } else SROOK_IF_CONSTEXPR (at == 5) {
             return format;
-        } else if constexpr (at == 6) {
+        } else SROOK_IF_CONSTEXPR (at == 6) {
             return major_rev;
-        } else if constexpr (at == 7) {
+        } else SROOK_IF_CONSTEXPR (at == 7) {
             return minor_rev;
-        } else if constexpr (at == 8) {
+        } else SROOK_IF_CONSTEXPR (at == 8) {
             return uni;
-        } else if constexpr (at == 9) {
+        } else SROOK_IF_CONSTEXPR (at == 9) {
             return width_density;
-        } else if constexpr (at == 10) {
+        } else SROOK_IF_CONSTEXPR (at == 10) {
             return height_density;
-        } else if constexpr (at == 11) {
+        } else SROOK_IF_CONSTEXPR (at == 11) {
             return width_thumbnail;
-        } else if constexpr (at == 12) {
+        } else SROOK_IF_CONSTEXPR (at == 12) {
             return height_thumbnail;
-        } else if constexpr (at == 13) {
+        } else SROOK_IF_CONSTEXPR (at == 13) {
             return ext;
-        } else if constexpr (at == 14) {
+        } else SROOK_IF_CONSTEXPR (at == 14) {
             return decodable;
         }
     }
@@ -299,35 +299,35 @@ struct property {
     template <At at>
     auto& get() noexcept
     {
-        if constexpr (at == At::HSize) {
+        SROOK_IF_CONSTEXPR (at == At::HSize) {
             return width;
-        } else if constexpr (at == At::VSize) {
+        } else SROOK_IF_CONSTEXPR (at == At::VSize) {
             return height;
-        } else if constexpr (at == At::Dimension) {
+        } else SROOK_IF_CONSTEXPR (at == At::Dimension) {
             return dimension;
-        } else if constexpr (at == At::SamplePrecision) {
+        } else SROOK_IF_CONSTEXPR (at == At::SamplePrecision) {
             return sample_precision;
-        } else if constexpr (at == At::Comment) {
+        } else SROOK_IF_CONSTEXPR (at == At::Comment) {
             return comment;
-        } else if constexpr (at == At::Format) {
+        } else SROOK_IF_CONSTEXPR (at == At::Format) {
             return format;
-        } else if constexpr (at == At::MajorRevisions) {
+        } else SROOK_IF_CONSTEXPR (at == At::MajorRevisions) {
             return major_rev;
-        } else if constexpr (at == At::MinorRevisions) {
+        } else SROOK_IF_CONSTEXPR (at == At::MinorRevisions) {
             return minor_rev;
-        } else if constexpr (at == At::Units) {
+        } else SROOK_IF_CONSTEXPR (at == At::Units) {
             return uni;
-        } else if constexpr (at == At::HDensity) {
+        } else SROOK_IF_CONSTEXPR (at == At::HDensity) {
             return width_density;
-        } else if constexpr (at == At::VDensity) {
+        } else SROOK_IF_CONSTEXPR (at == At::VDensity) {
             return height_density;
-        } else if constexpr (at == At::HThumbnail) {
+        } else SROOK_IF_CONSTEXPR (at == At::HThumbnail) {
             return width_thumbnail;
-        } else if constexpr (at == At::VThumbnail) {
+        } else SROOK_IF_CONSTEXPR (at == At::VThumbnail) {
             return height_thumbnail;
-        } else if constexpr (at == At::ExtensionCode) {
+        } else SROOK_IF_CONSTEXPR (at == At::ExtensionCode) {
             return ext;
-        } else if constexpr (at == At::Decodable) {
+        } else SROOK_IF_CONSTEXPR (at == At::Decodable) {
             return decodable;
         }
     }
