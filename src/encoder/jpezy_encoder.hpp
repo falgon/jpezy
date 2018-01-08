@@ -20,7 +20,7 @@ namespace jpezy {
 
 template <class T>
 struct encoder {
-    constexpr encoder(const property& pr_, const std::vector<T>& r_, const std::vector<T>& g_, const std::vector<T>& b_)
+    SROOK_CONSTEXPR encoder(const property& pr_, const std::vector<T>& r_, const std::vector<T>& g_, const std::vector<T>& b_)
         : pr(pr_)
         , r{ r_ }
         , g{ g_ }
@@ -35,7 +35,7 @@ struct encoder {
     }
 
     template <class MODE_TAG = COLOR_MODE>
-    std::size_t encode(const char* output_file) noexcept(false)
+    std::size_t encode(const char* output_file)
     {
         int size = pr.get<property::At::HSize>() * pr.get<property::At::VSize>() * 3;
         if (size < 10240)
@@ -57,7 +57,7 @@ struct encoder {
             for (int y = 0; y < VUnits; ++y) {
                 for (int x = 0; x < HUnits; ++x) {
                     make_YCC(x, y);
-                    if constexpr (std::is_same_v<MODE_TAG, GRAY_MODE>) {
+                    SROOK_IF_CONSTEXPR (std::is_same_v<MODE_TAG, GRAY_MODE>) {
                         boost::fill(Cb_block, 0);
                         boost::fill(Cr_block, 0);
                     }
@@ -78,20 +78,20 @@ struct encoder {
 private:
     using value_type = int;
 
-    static constexpr value_type block = 8;
+    static SROOK_CONSTEXPR value_type block = 8;
 public: 
-	static constexpr value_type block_size = block;
+	static SROOK_CONSTEXPR value_type block_size = block;
 private:
-    static constexpr value_type blocks_size = block * block;
-    static constexpr value_type rgb_size = 3;
-    static constexpr value_type mcu_size = 4;
+    static SROOK_CONSTEXPR value_type blocks_size = block * block;
+    static SROOK_CONSTEXPR value_type rgb_size = 3;
+    static SROOK_CONSTEXPR value_type mcu_size = 4;
 
-    void make_YCC(int ux, int uy) noexcept
+    void make_YCC(int ux, int uy) SROOK_NOEXCEPT_TRUE
     {
-        decltype(Y_block) Crblock{}, Cbblock{};
+        SROOK_DECLTYPE(Y_block) Crblock{}, Cbblock{};
 
         for (std::size_t i = 0; i < mcu_size; ++i) {
-            typename decltype(Y_block)::value_type::iterator
+            SROOK_DEDUCED_TYPENAME SROOK_DECLTYPE(Y_block)::value_type::iterator
                 yp
                 = std::begin(Y_block[i]),
                 cbp = std::begin(Cbblock[i]), crp = std::begin(Crblock[i]);
@@ -143,9 +143,9 @@ private:
     }
 
     template <class U, std::size_t s>
-    void DCT(srook::array<U, s>& pic) noexcept
+    void DCT(srook::array<U, s>& pic) SROOK_NOEXCEPT_TRUE
     {
-        constexpr double dis_sqrt = 1.0 / srook::sqrt(2.0);
+        SROOK_CONSTEXPR_OR_CONST double dis_sqrt = 1.0 / srook::sqrt(2.0);
 
         for (int i = 0; i < block; ++i) {
             const double cv = i ? 1.0 : dis_sqrt;
@@ -164,16 +164,16 @@ private:
         }
     }
 
-    void quantization(int cs) noexcept
+    void quantization(int cs) SROOK_NOEXCEPT_TRUE
     {
         const srook::array<int, 64>& qt = cs ? CQuantumTb : YQuantumTb;
         srook::for_each(srook::make_counter(DCT_data), [&qt](auto& v, std::size_t i) { v /= qt[i]; });
     }
 
     template <class U, std::size_t dcs, std::size_t acs>
-    void encode_huffman(int cs, srook::io::jpeg::bofstream& ofs, const huffmanCode_Tb<U, dcs>& dcT, const huffmanCode_Tb<U, acs>& acT, int eob_idx, int zrl_idx) noexcept(false)
+    void encode_huffman(int cs, srook::io::jpeg::bofstream& ofs, const huffmanCode_Tb<U, dcs>& dcT, const huffmanCode_Tb<U, acs>& acT, int eob_idx, int zrl_idx)
     {
-        const decltype(DCT_data)& dct_data = DCT_data;
+        const SROOK_DECLTYPE(DCT_data)& dct_data = DCT_data;
 
         // DC
         const int diff = dct_data[0] - pre_DC[cs];
@@ -223,7 +223,7 @@ private:
         }
     }
 
-    void make_MCU(srook::io::jpeg::bofstream& ofps) noexcept(false)
+    void make_MCU(srook::io::jpeg::bofstream& ofps)
     {
         for (auto& v : Y_block) {
             DCT(v);
@@ -241,15 +241,15 @@ private:
     }
 
     struct RGB {
-        static constexpr int Y(srook::byte r, srook::byte g, srook::byte b)
+        static SROOK_CONSTEXPR int Y(srook::byte r, srook::byte g, srook::byte b)
         {
             return int((0.2990 * srook::to_integer<int>(r)) + (0.5870 * srook::to_integer<int>(g)) + (0.1140 * srook::to_integer<int>(b)) - 128);
         }
-        static constexpr int Cb(srook::byte r, srook::byte g, srook::byte b)
+        static SROOK_CONSTEXPR int Cb(srook::byte r, srook::byte g, srook::byte b)
         {
             return int(-(0.1687 * srook::to_integer<int>(r)) - (0.3313 * srook::to_integer<int>(g)) + (0.5000 * srook::to_integer<int>(b)));
         }
-        static constexpr int Cr(srook::byte r, srook::byte g, srook::byte b)
+        static SROOK_CONSTEXPR int Cr(srook::byte r, srook::byte g, srook::byte b)
         {
             return int((0.5000 * srook::to_integer<int>(r)) - (0.4187 * srook::to_integer<int>(g)) - (0.0813 * srook::to_integer<int>(b)));
         }
@@ -265,7 +265,7 @@ private:
     srook::array<srook::array<value_type, blocks_size>, mcu_size> Y_block;
     srook::array<value_type, blocks_size> Cb_block, Cr_block;
 
-    static constexpr srook::array<const double, block * block> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
+    static SROOK_CONSTEXPR srook::array<const double, block * block> cos_table = srook::constant_sequence::math::unwrap_costable::array<srook::constant_sequence::math::make_costable_t<8,8>>::value;
 
     srook::array<value_type, blocks_size> DCT_data;
     srook::array<value_type, rgb_size> pre_DC;

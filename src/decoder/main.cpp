@@ -3,10 +3,11 @@
 #include "jpezy_decoder.hpp"
 #include <iostream>
 #include <memory>
+#include <srook/config/feature/decltype.hpp>
 #include <srook/optional.hpp>
 #include <srook/string/string_view.hpp>
 
-decltype(EXIT_FAILURE) disp_error() noexcept(false)
+SROOK_DECLTYPE(EXIT_FAILURE) disp_error() noexcept(false)
 {
     std::cerr << "Usage: jpezy_decoder <input.(jpg | jpeg)> ( <output.ppm | [OPT: --gray]> | -v )" << std::endl;
     return EXIT_FAILURE;
@@ -24,7 +25,7 @@ enum class Color {
 };
 
 template <class CL, class T>
-decltype(EXIT_FAILURE) output(jpezy::decoder<T>& dec, const char* output)
+SROOK_DECLTYPE(EXIT_FAILURE) output(jpezy::decoder<T>& dec, const char* output)
 {
     auto raw_op = dec.template decode<CL>();
 
@@ -45,7 +46,7 @@ decltype(EXIT_FAILURE) output(jpezy::decoder<T>& dec, const char* output)
     return EXIT_SUCCESS;
 }
 
-decltype(auto) exec(const char* input_file, const char* output_file, Mode m, Color c)
+SROOK_DECLTYPE(auto) exec(const char* input_file, const char* output_file, Mode m, Color c)
 {
     jpezy::disp_logo();
 

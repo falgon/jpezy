@@ -8,7 +8,10 @@
 #include <boost/parameter/name.hpp>
 #include <srook/array.hpp>
 #include <srook/cstddef/byte.hpp>
+#include <srook/config/feature/constexpr.hpp>
+#include <srook/config/feature/noexcept.hpp>
 #include <srook/config/feature/if_constexpr.hpp>
+#include <srook/config/feature/strong_enum.hpp>
 #include <srook/mpl/variadic_player.hpp>
 #include <srook/optional.hpp>
 
@@ -30,7 +33,7 @@ struct Debug;
 struct COLOR_MODE;
 struct GRAY_MODE;
 
-const srook::array<int, 64> ZZ{
+SROOK_CONSTEXPR_OR_CONST srook::array<int, 64> ZZ{
     { 0, 1, 8, 16, 9, 2, 3, 10,
 		17, 24, 32, 25, 18, 11, 4, 5,
         12, 19, 26, 33, 40, 48, 41, 34,
@@ -41,7 +44,7 @@ const srook::array<int, 64> ZZ{
         53, 60, 61, 54, 47, 55, 62, 63 }
 };
 
-enum class MARKER {
+SROOK_STRONG_ENUM_BEGIN(MARKER) {
     SOF0 = 0xc0,
     SOF1 = 0xc1,
     SOF2 = 0xc2,
@@ -121,10 +124,11 @@ enum class MARKER {
     Error = 0xff,
     Marker = 0xff
 };
+SROOK_STRONG_ENUM_EPILOG(MARKER)
 
 // ISO/IEC 10918-1:1993(E)
 // Table K.1 - Luminance quantization table
-static const srook::array<int, 64> YQuantumTb{
+static SROOK_CONSTEXPR_OR_CONST srook::array<int, 64> YQuantumTb{
     { 16, 11, 10, 16, 24, 40, 51, 61,
         12, 12, 14, 19, 26, 58, 60, 55,
         14, 13, 16, 24, 40, 57, 69, 56,
@@ -136,7 +140,7 @@ static const srook::array<int, 64> YQuantumTb{
 };
 
 // Table K.2 - Chrominance quantization table
-static const srook::array<int, 64> CQuantumTb{
+static SROOK_CONSTEXPR_OR_CONST srook::array<int, 64> CQuantumTb{
     { 17, 18, 24, 47, 99, 99, 99, 99,
         18, 21, 26, 66, 99, 99, 99, 99,
         24, 26, 56, 99, 99, 99, 99, 99,
@@ -148,22 +152,25 @@ static const srook::array<int, 64> CQuantumTb{
 };
 
 struct property {
-    enum class Format {
+    SROOK_STRONG_ENUM_BEGIN(Format) {
         undefined,
         JFIF,
         JFXX
     };
-    enum class Units {
+    SROOK_STRONG_ENUM_EPILOG(Format)
+    SROOK_STRONG_ENUM_BEGIN(Units) {
         undefined,
         dots_inch,
         dots_cm
     };
-    enum class ExtensionCodes {
+    SROOK_STRONG_ENUM_EPILOG(Units)
+    SROOK_STRONG_ENUM_BEGIN(ExtensionCodes) {
         undefined = 0,
         JPEG = 0x10,
         oneByte_pixel = 0x11,
         threeByte_pixel = 0x13
     };
+    SROOK_STRONG_ENUM_EPILOG(ExtensionCodes)
     enum AnalyzedResult {
         Yet = 0,
         is_htable = 0x01,
@@ -172,7 +179,7 @@ struct property {
         is_comment = 0x08,
         is_start_data = 0x10
     };
-    enum class At {
+    SROOK_STRONG_ENUM_BEGIN(At) {
         HSize,
         VSize,
         Dimension,
@@ -190,6 +197,7 @@ struct property {
         Decodable,
         ELEMENT_SIZE
     };
+    SROOK_STRONG_ENUM_EPILOG(At)
 
     std::size_t width, height;
     int dimension, sample_precision;
@@ -225,7 +233,7 @@ struct property {
     property(const property&) = default;
 
     template <At at>
-    const auto& get() const noexcept
+    const auto& get() const SROOK_NOEXCEPT_TRUE
     {
         SROOK_IF_CONSTEXPR (at == At::HSize) {
             return width;
@@ -261,7 +269,7 @@ struct property {
     }
 
     template <std::size_t at>
-    const auto& get() const noexcept
+    const auto& get() const SROOK_NOEXCEPT_TRUE
     {
         SROOK_IF_CONSTEXPR (at == 0) {
             return width;
@@ -297,7 +305,7 @@ struct property {
     }
 
     template <At at>
-    auto& get() noexcept
+    auto& get() SROOK_NOEXCEPT_TRUE
     {
         SROOK_IF_CONSTEXPR (at == At::HSize) {
             return width;

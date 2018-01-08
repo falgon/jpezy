@@ -8,7 +8,7 @@ namespace jpezy {
 template <class T, std::size_t s>
 struct huffmanCode_Tb {
     using value_type = T;
-    explicit constexpr huffmanCode_Tb(const srook::array<T, s>& size, const srook::array<T, s>& code)
+    explicit SROOK_CONSTEXPR huffmanCode_Tb(const srook::array<T, s>& size, const srook::array<T, s>& code)
         : size_tb(size)
         , code_tb(code)
     {
@@ -17,10 +17,7 @@ struct huffmanCode_Tb {
     const srook::array<T, s>& size_tb;
     const srook::array<T, s>& code_tb;
 
-    constexpr std::size_t size() const noexcept
-    {
-        return s;
-    }
+    SROOK_CONSTEXPR std::size_t size() const SROOK_NOEXCEPT_TRUE { return s; }
 };
 template <class T, std::size_t s>
 explicit huffmanCode_Tb(const srook::array<T, s>&, const srook::array<T, s>&) -> huffmanCode_Tb<T, s>;
@@ -29,25 +26,25 @@ explicit huffmanCode_Tb(const srook::array<T, s>&, const srook::array<T, s>&) ->
 
 // Table K.3  - Table for luminance DC coefficient differences
 using YCDc_type = srook::array<int, 12>;
-static const YCDc_type YDcSizeT{
+static SROOK_CONSTEXPR_OR_CONST YCDc_type YDcSizeT{
     0x0002, 0x0003, 0x0003, 0x0003,
     0x0003, 0x0003, 0x0004, 0x0005,
     0x0006, 0x0007, 0x0008, 0x0009
 };
-static const YCDc_type YDcCodeT{
+static SROOK_CONSTEXPR_OR_CONST YCDc_type YDcCodeT{
     0x0000, 0x0002, 0x0003, 0x0004,
     0x0005, 0x0006, 0x000e, 0x001e,
     0x003e, 0x007e, 0x00fe, 0x01fe
 };
-static const huffmanCode_Tb YDcHuffmanT{ YDcSizeT, YDcCodeT };
+static SROOK_CONSTEXPR_OR_CONST huffmanCode_Tb YDcHuffmanT{ YDcSizeT, YDcCodeT };
 
 // Table K.4 - Table for chrominance DC coefficient differences
-static const YCDc_type CDcSizeT{
+static SROOK_CONSTEXPR_OR_CONST YCDc_type CDcSizeT{
     0x0002, 0x0002, 0x0002, 0x0003,
     0x0004, 0x0005, 0x0006, 0x0007,
     0x0008, 0x0009, 0x000a, 0x000b
 };
-static const YCDc_type CDcCodeT{
+static SROOK_CONSTEXPR_OR_CONST YCDc_type CDcCodeT{
     0x0000, 0x0001, 0x0002, 0x0006,
     0x000e, 0x001e, 0x003e, 0x007e,
     0x00fe, 0x01fe, 0x03fe, 0x07fe
@@ -57,7 +54,7 @@ static const huffmanCode_Tb CDcHuffmanT{ CDcSizeT, CDcCodeT };
 // Table K.5 - Table for luminance AC coefficient(sheet 1 - 4)
 using YCAc_type = srook::array<int, 162>;
 
-static const YCAc_type YAcSizeT{
+static SROOK_CONSTEXPR_OR_CONST YCAc_type YAcSizeT{
     4, 2, 2, 3, 4, 5, 7, 8,
     10, 16, 16, 4, 5, 7, 9, 11,
     16, 16, 16, 16, 16, 5, 8, 10,
@@ -80,7 +77,7 @@ static const YCAc_type YAcSizeT{
     16, 16, 16, 16, 16, 16, 16, 16,
     16, 16
 };
-static const YCAc_type YAcCodeT{
+static SROOK_CONSTEXPR_OR_CONST YCAc_type YAcCodeT{
     0x000a, 0x0000, 0x0001, 0x0004,
     0x000b, 0x001a, 0x0078, 0x00f8,
     0x03f6, 0xff82, 0xff83, 0x000c,
@@ -123,13 +120,13 @@ static const YCAc_type YAcCodeT{
     0xfff9, 0xfffa, 0xfffb, 0xfffc,
     0xfffd, 0xfffe
 };
-static const huffmanCode_Tb YAcHuffmanT{ YAcSizeT, YAcCodeT };
+static SROOK_CONSTEXPR_OR_CONST huffmanCode_Tb YAcHuffmanT{ YAcSizeT, YAcCodeT };
 
-static const int YEOBidx = 0;
-static const int YZRLidx = 151;
+static SROOK_CONSTEXPR_OR_CONST int YEOBidx = 0;
+static SROOK_CONSTEXPR_OR_CONST int YZRLidx = 151;
 
 // Table K.6 - Table for chrominance AC coefficient(sheet 1 - 4)
-static const YCAc_type CAcSizeT{
+static SROOK_CONSTEXPR_OR_CONST YCAc_type CAcSizeT{
     2, 2, 3, 4, 5, 5, 6, 7,
     9, 10, 12, 4, 6, 8, 9, 11,
     12, 16, 16, 16, 16, 5, 8, 10,
@@ -152,7 +149,7 @@ static const YCAc_type CAcSizeT{
     15, 16, 16, 16, 16, 16, 16, 16,
     16, 16
 };
-static const YCAc_type CAcCodeT{
+static SROOK_CONSTEXPR_OR_CONST YCAc_type CAcCodeT{
     0x0000, 0x0001, 0x0004, 0x000a,
     0x0018, 0x0019, 0x0038, 0x0078,
     0x01f4, 0x03f6, 0x0ff4, 0x000b,
@@ -195,20 +192,20 @@ static const YCAc_type CAcCodeT{
     0xfff9, 0xfffa, 0xfffb, 0xfffc,
     0xfffd, 0xfffe
 };
-static const huffmanCode_Tb CAcHuffmanT{ CAcSizeT, CAcCodeT };
+static SROOK_CONSTEXPR_OR_CONST huffmanCode_Tb CAcHuffmanT{ CAcSizeT, CAcCodeT };
 
-static const int CEOBidx = 0;
-static const int CZRLidx = 151;
+static SROOK_CONSTEXPR_OR_CONST int CEOBidx = 0;
+static SROOK_CONSTEXPR_OR_CONST int CZRLidx = 151;
 
 // HuffmanCode
 
-static const int DcDhtLength = 0x21;
-static const int AcDhtLength = 0xb7;
+static SROOK_CONSTEXPR_OR_CONST int DcDhtLength = 0x21;
+static SROOK_CONSTEXPR_OR_CONST int AcDhtLength = 0xb7;
 
 using YDCD_t = srook::array<srook::byte, 33>;
 using namespace srook::literals::byte_literals;
 
-static const YDCD_t YDcDht{
+static SROOK_CONSTEXPR_OR_CONST YDCD_t YDcDht{
     0xff_byte, 0xc4_byte,
     0x00_byte, 0x1f_byte,
     0x00_byte,
@@ -218,7 +215,7 @@ static const YDCD_t YDcDht{
     0x08_byte, 0x09_byte, 0x0a_byte, 0x0b_byte
 };
 
-static const YDCD_t CDcDht{
+static SROOK_CONSTEXPR_OR_CONST YDCD_t CDcDht{
     0xff_byte, 0xc4_byte,
     0x00_byte, 0x1f_byte,
     0x01_byte,
@@ -230,7 +227,7 @@ static const YDCD_t CDcDht{
 
 using YCAc_t = srook::array<srook::byte, 183>;
 
-static const YCAc_t YAcDht{
+static SROOK_CONSTEXPR_OR_CONST YCAc_t YAcDht{
     0xff_byte, 0xc4_byte,
     0x00_byte, 0xb5_byte,
     0x10_byte,
@@ -259,7 +256,7 @@ static const YCAc_t YAcDht{
     0xf9_byte, 0xfa_byte
 };
 
-static const YCAc_t CAcDht{
+static SROOK_CONSTEXPR_OR_CONST YCAc_t CAcDht{
     0xff_byte, 0xc4_byte,
     0x00_byte, 0xb5_byte,
     0x11_byte,

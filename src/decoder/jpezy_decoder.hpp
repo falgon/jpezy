@@ -14,6 +14,9 @@
 
 #include <srook/algorithm/for_each.hpp>
 #include <srook/config/attribute/fallthrough.hpp>
+#include <srook/config/feature/if_constexpr.hpp>
+#include <srook/config/feature/deduced_typename.hpp>
+#include <srook/config/feature/decltype.hpp>
 #include <srook/io/bifstream.hpp>
 #include <srook/iterator/ostream_joiner.hpp>
 #include <srook/math/constants/algorithm/cos.hpp>
@@ -83,7 +86,7 @@ struct decoder {
 	if (!(pr.get<property::At::Decodable>() & (property::AnalyzedResult::is_htable | property::AnalyzedResult::is_qtable | property::AnalyzedResult::is_start_data)))
 	    return {};
 	std::unique_ptr<raii_messenger> mes_dec;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes_dec = std::make_unique<raii_messenger>("decoding started...", "\t");
 
 	const std::size_t Vblock = get_blocks(pr.get<property::At::VSize>());
@@ -175,7 +178,7 @@ private:
 	SROOK_NOEXCEPT(noexcept(get_marker()) and noexcept(analyze_marker()))
     {
 	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes = std::make_unique<raii_messenger>("analyzing header...", "\t");
 
 	do {
@@ -195,7 +198,7 @@ private:
     void analyze_dht(std::size_t size)
     {
 	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes = std::make_unique<raii_messenger>("analyzing DHT...", "\t\t\t");
 
 	const srook::byte *end_add = bifs.next_address();
@@ -222,7 +225,7 @@ private:
 	    std::size_t n_ = 0;
 	    boost::generate(cc, [this, &n_]() {std::underlying_type_t<srook::byte> b{}; (bifs | srook::io::jpeg::bifstream::Byte) >> b; n_ += b; return b; });
 
-	    if constexpr (std::is_same<BuildMode, Debug>())
+	    SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		std::cout << " size: " << n_ << std::endl;
 	    const std::size_t &n = n_;
 
@@ -254,7 +257,7 @@ private:
 	    for (std::size_t k = 0; k < n; ++k)
 		(bifs | srook::io::jpeg::bifstream::Byte) >> ht_.valueTP[k];
 
-	    if constexpr (std::is_same<BuildMode, Debug>()) {
+	    SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>()) {
 		switch (n) {
 		    case 12: {
 			std::cout << "found DC Huffman Table... ";
@@ -274,7 +277,7 @@ private:
     void analyze_dqt(std::size_t size)
     {
 	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing DQT...");
 
 	const srook::byte *const end_add = bifs.next_address() + size;
@@ -282,7 +285,7 @@ private:
 	do {
 	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
 
-	    if (typename decltype(qt)::value_type::iterator iter = std::begin(qt[c & 0x3]); !(c >> 4)) {
+	    if (SROOK_DEDUCED_TYPENAME SROOK_DECLTYPE(qt)::value_type::iterator iter = std::begin(qt[c & 0x3]); !(c >> 4)) {
 		std::underlying_type_t<srook::byte> t{};
 		for (std::size_t i = 0; i < blocks_size; ++i) {
 		    (bifs | srook::io::jpeg::bifstream::Byte) >> t;
@@ -298,7 +301,7 @@ private:
     void analyze_frame()
     {
 	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing frames...");
 
 	using namespace srook::literals::byte_literals;
@@ -310,7 +313,7 @@ private:
 	if (pr.get<property::At::Dimension>() != 3 and pr.get<property::At::Dimension>() != 1)
 	    throw std::runtime_error("Sorry, this dimension size is not supported");
 
-	if constexpr (std::is_same<BuildMode, Debug>()) {
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>()) {
 	    std::cout << "VSize: " << pr.get<property::At::VSize>() << " HSize: " << pr.get<property::At::HSize>() << " ";
 	}
 
@@ -318,7 +321,7 @@ private:
 	    (bifs | srook::io::jpeg::bifstream::Byte) >> fcomp[i].C;
 	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
 
-	    fcomp[i].H = typename get_character<srook::byte>::type(c >> 4);
+	    fcomp[i].H = SROOK_DEDUCED_TYPENAME get_character<srook::byte>::type(c >> 4);
 	    if (fcomp[i].H > hmax)
 		hmax = fcomp[i].H;
 	    fcomp[i].V = (std::underlying_type_t<srook::byte>(c) & 0xf);
@@ -332,7 +335,7 @@ private:
     void analyze_scan()
     {
 	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing scan data...");
 
 	srook::byte c{};
@@ -356,7 +359,7 @@ private:
 	    (bifs | srook::io::jpeg::bifstream::Byte) >> s_header.spectral_begin;
 	    (bifs | srook::io::jpeg::bifstream::Byte) >> s_header.spectral_end;
 	    (bifs | srook::io::jpeg::bifstream::Byte) >> c;
-	    s_header.Ah = srook::to_integer<typename get_character<srook::byte>::type>(c >> 4);
+	    s_header.Ah = srook::to_integer<SROOK_DEDUCED_TYPENAME get_character<srook::byte>::type>(c >> 4);
 	    s_header.Al = srook::to_integer<std::underlying_type_t<srook::byte>>(c) & 0xf;
 	}
     }
@@ -364,7 +367,7 @@ private:
     void analyze_jfif()
     {
 	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing jfif...");
 
 	pr.get<property::At::Format>() = property::Format::JFIF;
@@ -381,7 +384,7 @@ private:
     void analyze_jfxx()
     {
 	std::unique_ptr<raii_messenger> mes;
-	if constexpr (std::is_same<BuildMode, Debug>())
+	SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 	    mes = std::make_unique<raii_messenger>("\t\t\tanalyzing jfxx...");
 
 	pr.get<property::At::Format>() = property::Format::JFXX;
@@ -396,50 +399,50 @@ private:
 
 	switch (mark) {
 	    case MARKER::SOF0:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [SOF0]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		analyze_frame();
 		break;
 	    case MARKER::DHT:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DHT]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
 		analyze_dht(length);
 		return property::AnalyzedResult::is_htable;
 	    case MARKER::DNL:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DNL]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		(bifs | srook::io::jpeg::bifstream::Word) >> pr.get<property::At::VSize>();
 		break;
 	    case MARKER::DQT:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DQT]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
 		analyze_dqt(length);
 		return property::AnalyzedResult::is_qtable;
 	    case MARKER::EOI:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [EOI]" << std::endl;
 		enable = false;
 		break;
 	    case MARKER::SOS:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [SOS]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		analyze_scan();
 		return property::AnalyzedResult::is_start_data;
 	    case MARKER::DRI:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [DRI]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		(bifs | srook::io::jpeg::bifstream::Word) >> restart_interval;
 		break;
 	    case MARKER::COM:
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\t\tfound marker: [COM]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
@@ -459,7 +462,7 @@ private:
 		break;
 
 	    case MARKER::APP0: {
-		if constexpr (std::is_same<BuildMode, Debug>())
+		SROOK_IF_CONSTEXPR (std::is_same<BuildMode, Debug>())
 		    std::cout << "\n\t\tfound marker: [APP0]" << std::endl;
 		(bifs | srook::io::jpeg::bifstream::Word) >> length;
 		param_offset(length);
@@ -556,7 +559,7 @@ private:
 		    inverse_quantization(sc);
 		    inverse_dct();
 
-		    typename std::remove_reference_t<decltype(comp)>::value_type::iterator tp = std::next(std::begin(comp[sc]), ky * v_step * block_size + kx * block_size);
+		    SROOK_DEDUCED_TYPENAME std::remove_reference_t<SROOK_DECLTYPE(comp)>::value_type::iterator tp = std::next(std::begin(comp[sc]), ky * v_step * block_size + kx * block_size);
 		    for (std::size_t y_u = 0; y_u < block_size * dupc_y; ++y_u) {
 			for (std::size_t x_u = 0; x_u < block_size * dupc_x; ++x_u) {
 			    tp[y_u * v_step + x_u] = block[(y_u / dupc_y) * block_size + (x_u / dupc_x)];
@@ -570,7 +573,7 @@ private:
     template <class MODE_TAG>
     void make_rgb(const std::size_t ux, const std::size_t uy) noexcept
     {
-	typename std::remove_reference_t<decltype(comp)>::value_type::iterator yp = std::begin(comp[0]), up = std::begin(comp[1]), vp = std::begin(comp[2]);
+	SROOK_DEDUCED_TYPENAME std::remove_reference_t<SROOK_DECLTYPE(comp)>::value_type::iterator yp = std::begin(comp[0]), up = std::begin(comp[1]), vp = std::begin(comp[2]);
 	const std::size_t line = uy * vmax * block_size;
 	const std::size_t offset_v = line * pr.get<property::At::HSize>();
 	const std::size_t offset_h = ux * hmax * block_size;
@@ -589,7 +592,7 @@ private:
 		    break;
 		}
 
-		if constexpr (const std::size_t index = pic_y * pr.get<property::At::HSize>() + pic_x; std::is_same<MODE_TAG, COLOR_MODE>()) {
+		SROOK_IF_CONSTEXPR (const std::size_t index = pic_y * pr.get<property::At::HSize>() + pic_x; std::is_same<MODE_TAG, COLOR_MODE>()) {
 		    rp[index] = revise_value(to_r(*yp, *vp));
 		    gp[index] = revise_value(to_g(*yp, *up, *vp));
 		    bp[index] = revise_value(to_b(*yp, *up));
@@ -692,8 +695,8 @@ private:
 
     void inverse_quantization(std::size_t sc) noexcept
     {
-	typename std::remove_reference_t<decltype(dct)>::iterator p = std::begin(dct);
-	typename std::remove_reference_t<decltype(qt)>::value_type::const_iterator iter = std::begin(qt[fcomp[sc].Tq]);
+	SROOK_DEDUCED_TYPENAME std::remove_reference_t<SROOK_DECLTYPE(dct)>::iterator p = std::begin(dct);
+	SROOK_DEDUCED_TYPENAME std::remove_reference_t<SROOK_DECLTYPE(qt)>::value_type::const_iterator iter = std::begin(qt[fcomp[sc].Tq]);
 
 	for (std::size_t i = 0; i < blocks_size; ++i)
 	    *p++ *= *iter++;

@@ -1,7 +1,7 @@
 #include "encode_io.hpp"
 #include <srook/string/string_view.hpp>
 
-decltype(EXIT_FAILURE) disp_error() noexcept(false)
+SROOK_DECLTYPE(EXIT_FAILURE) disp_error()
 {
     std::cerr << "Usage: jpezy_encoder <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | --debug )" << std::endl;
     return EXIT_FAILURE;
@@ -14,17 +14,17 @@ enum class Mode { JPEG,
     UD };
 
 template <class... Modes>
-auto exec(const jpezy::encode_io& pnm, const char* ofile, Modes&&... m) noexcept(false)
-    -> std::enable_if_t<std::conjunction_v<std::is_same<Mode, std::decay_t<Modes>>...> and (sizeof...(m) > 0 and sizeof...(m) < 3), void>
+auto exec(const jpezy::encode_io& pnm, const char* ofile, Modes&&... m)
+-> std::enable_if_t<std::conjunction_v<std::is_same<Mode, std::decay_t<Modes>>...> and (sizeof...(m) > 0 and sizeof...(m) < 3), void>
 {
     const std::tuple<std::decay_t<Modes>...> ms{ std::forward<Modes>(m)... };
 
-    if constexpr (sizeof...(m) == 2) {
+    SROOK_IF_CONSTEXPR (sizeof...(m) == 2) {
         if (std::get<0>(ms) == Mode::JPEG and std::get<1>(ms) == Mode::GRAY) {
             std::ofstream ofs(ofile, std::ios::binary);
             ofs << (pnm | jpezy::to_jpeg(ofile) | jpezy::gray_scale);
         } else {
-            throw std::invalid_argument("2nd Mode parameter must be GRAY");
+            SROOK_THROW std::invalid_argument("2nd Mode parameter must be GRAY");
         }
     } else {
         switch (std::get<0>(ms)) {
@@ -46,7 +46,7 @@ auto exec(const jpezy::encode_io& pnm, const char* ofile, Modes&&... m) noexcept
         case Mode::UD:
             [[fallthrough]];
         default:
-            throw std::runtime_error("Maybe broken memory");
+            SROOK_THROW std::runtime_error("Maybe broken memory");
         };
     }
 }
@@ -93,13 +93,13 @@ int main(const int argc, const char* argv[])
     auto t1 = section.stop();
     section.restart("Start encoding and writing ...");
 
-    try {
+    SROOK_TRY {
         if (m2 == Mode::GRAY) {
             exec(pnm, argv[2], m1, m2);
         } else {
             exec(pnm, argv[2], m1);
         }
-    } catch (const std::runtime_error& e) {
+    } SROOK_CATCH (const std::runtime_error& e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
@@ -109,6 +109,6 @@ int main(const int argc, const char* argv[])
     if (t1 and t2) {
         std::cout << "Total processing time: " << t1.value() + t2.value() << std::endl;
     } else {
-        throw std::runtime_error("Timer error");
+        SROOK_THROW std::runtime_error("Timer error");
     }
 }

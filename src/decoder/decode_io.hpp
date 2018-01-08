@@ -4,6 +4,7 @@
 
 #include "../pnm_stream.hpp"
 #include <fstream>
+#include <srook/config/feature/deduced_typename.hpp>
 #include <srook/config/require.hpp>
 #include <srook/utility/void_t.hpp>
 #include <type_traits>
@@ -18,7 +19,7 @@ struct has_30_7_5_1_output_stream_type : std::false_type {};
 
 template <class T>
 struct has_30_7_5_1_output_stream_type<
-    T, srook::void_t<typename T::char_type, typename T::int_type, typename T::pos_type, typename T::pos_type, typename T::off_type, typename T::traits_type>> : std::true_type {
+    T, srook::void_t<SROOK_DEDUCED_TYPENAME T::char_type, SROOK_DEDUCED_TYPENAME T::int_type, SROOK_DEDUCED_TYPENAME T::pos_type, SROOK_DEDUCED_TYPENAME T::pos_type, SROOK_DEDUCED_TYPENAME T::off_type, SROOK_DEDUCED_TYPENAME T::traits_type>> : std::true_type {
 };
 
 } // namespace detail
@@ -44,7 +45,7 @@ private:
 	ofs << io.width << " " << io.height << "\n";
 	ofs << io.max_color << "\n";
 	for (
-	    typename std::decay_t<Range>::const_iterator r_iter = std::begin(io.r_), g_iter = std::begin(io.g_), b_iter = std::begin(io.b_);
+	    SROOK_DEDUCED_TYPENAME std::decay_t<Range>::const_iterator r_iter = std::begin(io.r_), g_iter = std::begin(io.g_), b_iter = std::begin(io.b_);
 	    r_iter != std::next(std::begin(io.r_), (io.width * io.height)) and g_iter != std::next(std::begin(io.g_), (io.width * io.height)) and b_iter != std::next(std::begin(io.b_), (io.width * io.height)) and ofs;
 	    ++r_iter, ++g_iter, ++b_iter) {
 	    ofs << srook::to_integer<unsigned int>(*r_iter) << " "

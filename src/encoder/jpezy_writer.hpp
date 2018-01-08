@@ -18,7 +18,7 @@ struct jpezy_writer {
     {
     }
 
-    void write_header() noexcept(false)
+    void write_header()
     {
         if (!ofps)
             throw std::runtime_error(__func__);
@@ -94,7 +94,7 @@ struct jpezy_writer {
         (ofps | srook::io::jpeg::bofstream::Byte) << 0;
     }
 
-    srook::io::jpeg::bofstream& get_stream() noexcept
+    srook::io::jpeg::bofstream& get_stream() SROOK_NOEXCEPT_TRUE
     {
         return ofps;
     }
@@ -105,7 +105,7 @@ struct jpezy_writer {
         (ofps | srook::io::jpeg::bofstream::Byte) << MARKER::Marker << MARKER::EOI;
     }
 
-    void output_file() noexcept(false)
+    void output_file()
     {
         ofps.output_file();
     }

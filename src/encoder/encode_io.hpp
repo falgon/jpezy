@@ -3,6 +3,9 @@
 
 #include <algorithm>
 #include <srook/array.hpp>
+#include <srook/config/feature/constexpr.hpp>
+#include <srook/config/feature/decltype.hpp>
+#include <srook/config/feature/deduced_typename.hpp>
 #include <experimental/iterator>
 #include <fstream>
 #include <iostream>
@@ -27,7 +30,7 @@
 namespace jpezy {
 
 struct to_jpeg {
-    explicit constexpr to_jpeg(const char* file_)
+    explicit SROOK_CONSTEXPR to_jpeg(const char* file_)
         : file(file_)
     {
     }
@@ -81,9 +84,9 @@ struct encode_io : pnm_stream {
                     }
 
                     rgb_img.resize(img.size() / 3);
-                    typename decltype(rgb_img)::value_type::value_type r, g, b;
+                    SROOK_DEDUCED_TYPENAME SROOK_DECLTYPE(rgb_img)::value_type::value_type r, g, b;
                     for (auto& v : rgb_img) {
-                        for (typename decltype(rgb_img)::value_type::value_type& cl : { std::ref(r), std::ref(g), std::ref(b) }) {
+                        for (SROOK_DEDUCED_TYPENAME SROOK_DECLTYPE(rgb_img)::value_type::value_type& cl : { std::ref(r), std::ref(g), std::ref(b) }) {
                             cl = img.front();
                             img.pop_front();
                         }
@@ -164,7 +167,7 @@ private:
     }
 
     friend std::ofstream&
-    operator<<(std::ofstream& ofs, const std::pair<decltype(gray_scale), std::pair<const to_jpeg, const encode_io&>>& pnm)
+    operator<<(std::ofstream& ofs, const std::pair<SROOK_DECLTYPE(gray_scale), std::pair<const to_jpeg, const encode_io&>>& pnm)
     {
         ofs.close();
         pnm.second.second.report_error(__func__);
@@ -190,8 +193,8 @@ private:
         return ofs;
     }
 
-    friend std::pair<const decltype(gray_scale), std::pair<const to_jpeg, const encode_io&>>
-    operator|(const std::pair<const to_jpeg, const encode_io&>& pnm, const decltype(gray_scale) & gr)
+    friend std::pair<const SROOK_DECLTYPE(gray_scale), std::pair<const to_jpeg, const encode_io&>>
+    operator|(const std::pair<const to_jpeg, const encode_io&>& pnm, const SROOK_DECLTYPE(gray_scale) & gr)
     {
         return std::make_pair(gr, pnm);
     }
