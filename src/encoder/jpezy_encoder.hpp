@@ -167,7 +167,7 @@ private:
     void quantization(int cs) SROOK_NOEXCEPT_TRUE
     {
         const srook::array<int, 64>& qt = cs ? CQuantumTb : YQuantumTb;
-        srook::for_each(srook::algorith::make_counter(DCT_data), [&qt](auto& v, std::size_t i) { v /= qt[i]; });
+        srook::for_each(srook::algorithm::make_counter(DCT_data), [&qt](auto& v, std::size_t i) { v /= qt[i]; });
     }
 
     template <class U, std::size_t dcs, std::size_t acs>

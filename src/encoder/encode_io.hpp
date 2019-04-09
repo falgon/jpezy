@@ -122,7 +122,7 @@ private:
         std::vector<rgb_type> r(rgb_img.size()), g(rgb_img.size()), b(rgb_img.size());
 
         srook::for_each(
-            srook::algorith::make_counter({ std::ref(r), std::ref(g), std::ref(b) }),
+            srook::algorithm::make_counter({ std::ref(r), std::ref(g), std::ref(b) }),
             [this](std::vector<rgb_type>& element, std::size_t i) {
                 boost::transform(rgb_img, std::begin(element), [&i](const srook::array<rgb_type, 3>& ar) { return srook::byte(ar[i]); });
             });
