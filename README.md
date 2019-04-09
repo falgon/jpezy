@@ -154,15 +154,15 @@ The examples using decoder as a library are as follows.
 
 int main()
 {
-        jpezy::decoder<jpezy::Release> dec("input.jpg"); // appoint the input JPEG image file
-        const auto raw = dec.decode<jpezy::COLOR_MODE>(); // Decoding and returning rgb raw data. This value wrapped optional.
+    jpezy::decoder<jpezy::Release> dec("input.jpg"); // appoint the input JPEG image file
+    const auto raw = dec.decode<jpezy::COLOR_MODE>(); // Decoding and returning rgb raw data. This value wrapped optional.
 
-        if(!raw)return EXIT_FAILURE;
-        const auto& [r,g,b] = raw.value(); // getting rgb data by structure bindings. 
+    if (!raw) return EXIT_FAILURE;
+    const auto& [r, g, b] = raw.value(); // getting rgb data by structure bindings. 
 
-        std::ofstream ofs("output.ppm"); // appoint the output PPM image file.
-        jpezy::decode_io decio(dec.pr.get<jpezy::property::At::HSize>(),dec.pr.get<jpezy::property::At::VSize>(),r,g,b); // passing data to helper that jpezy::decode_io
-        ofs << decio; // Outputing the PPM file.
+    std::ofstream ofs("output.ppm"); // appoint the output PPM image file.
+    jpezy::decode_io decio(dec.pr.get<jpezy::property::At::HSize>(), dec.pr.get<jpezy::property::At::VSize>(), r, g, b); // passing data to helper that jpezy::decode_io
+    ofs << decio; // Outputing the PPM file.
 }
 ```
 
