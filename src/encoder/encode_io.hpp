@@ -1,16 +1,21 @@
 #ifndef INCLUDED_JPEZY_ENCODE_IO_HPP
 #define INCLUDED_JPEZY_ENCODE_IO_HPP
 
-#include <algorithm>
 #include <srook/array.hpp>
 #include <srook/config/feature/constexpr.hpp>
 #include <srook/config/feature/decltype.hpp>
 #include <srook/config/feature/deduced_typename.hpp>
-#include <experimental/iterator>
+#include <srook/config/require.hpp>
+#include <srook/optional.hpp>
+#include <srook/algorithm/for_each.hpp>
+#include <srook/type_traits/is_same.hpp>
+#include <srook/type_traits/detail/logical.hpp>
+#include <srook/iterator/range_access.hpp>
+#include <srook/iterator/ostream_joiner.hpp>
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <list>
-#include <srook/optional.hpp>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -19,8 +24,6 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/range/algorithm/copy.hpp>
 #include <boost/range/algorithm/transform.hpp>
-
-#include <srook/algorithm/for_each.hpp>
 
 #include "../jpezy.hpp"
 #include "../pnm_stream.hpp"
@@ -32,8 +35,7 @@ namespace jpezy {
 struct to_jpeg {
     explicit SROOK_CONSTEXPR to_jpeg(const char* file_)
         : file(file_)
-    {
-    }
+    {}
     const char* file;
 };
 
@@ -68,8 +70,8 @@ struct encode_io : pnm_stream {
                 if (wh.size() != 2) {
                     initializing_succeed = false;
                 } else {
-                    width = std::stoi(*std::begin(wh));
-                    height = std::stoi(*std::next(std::begin(wh), 1));
+                    width = std::stoi(*srook::begin(wh));
+                    height = std::stoi(*std::next(srook::begin(wh), 1));
 
                     format = jump_comment(ifs);
                     max_color = std::stoi(format);
@@ -99,8 +101,8 @@ struct encode_io : pnm_stream {
     }
 
 private:
-    template <class T, std::enable_if_t<std::is_same_v<T, std::ostream> or std::is_same_v<T, std::ofstream>, std::nullptr_t> = nullptr>
-    friend T& operator<<(T& os, const encode_io& pnm) noexcept(false)
+    template <class T, SROOK_REQUIRES(srook::type_traits::detail::Lor<srook::is_same<T, std::ostream>, srook::is_same<T, std::ofstream>>::value)>
+    friend T& operator<<(T& os, const encode_io& pnm)
     {
         using p3_ascii_type = std::size_t;
 
@@ -110,28 +112,28 @@ private:
         os << static_cast<p3_ascii_type>(pnm.max_color) << "\n";
 
         for (const auto& rgb : pnm.rgb_img) {
-            boost::transform(rgb, std::experimental::make_ostream_joiner(os, " "), [](const auto& v) { return static_cast<p3_ascii_type>(v); });
+            boost::transform(rgb, srook::make_ostream_joiner(os, " "), [](const auto& v) { return static_cast<p3_ascii_type>(v); });
             os << '\n';
         }
         return os;
     }
 
     std::tuple<std::vector<rgb_type>, std::vector<rgb_type>, std::vector<rgb_type>>
-    split_rgb() const noexcept
+    split_rgb() const
     {
         std::vector<rgb_type> r(rgb_img.size()), g(rgb_img.size()), b(rgb_img.size());
 
         srook::for_each(
             srook::algorithm::make_counter({ std::ref(r), std::ref(g), std::ref(b) }),
             [this](std::vector<rgb_type>& element, std::size_t i) {
-                boost::transform(rgb_img, std::begin(element), [&i](const srook::array<rgb_type, 3>& ar) { return srook::byte(ar[i]); });
+                boost::transform(rgb_img, srook::begin(element), [&i](const srook::array<rgb_type, 3>& ar) { return srook::byte(ar[i]); });
             });
 
         return std::make_tuple(r, g, b);
     }
 
     friend std::ofstream&
-    operator<<(std::ofstream& ofs, const std::pair<const to_jpeg, const encode_io&>& pnm) noexcept(false)
+    operator<<(std::ofstream& ofs, const std::pair<const to_jpeg, const encode_io&>& pnm)
     {
         ofs.close();
         pnm.second.report_error(__func__);
@@ -158,7 +160,7 @@ private:
                 _decodable = property::AnalyzedResult::Yet))
         };
 
-        auto && [ r, g, b ] = pnm.second.split_rgb();
+        auto&& [ r, g, b ] = pnm.second.split_rgb();
         encoder enc(std::move(pr), std::move(r), std::move(g), std::move(b));
         const std::size_t size = enc.encode<jpezy::COLOR_MODE>(pnm.first.file);
         std::cout << "Output size: " << size << " byte" << std::endl;
@@ -185,7 +187,7 @@ private:
             property::ExtensionCodes::undefined
         };
 
-        auto && [ r, g, b ] = pnm.second.second.split_rgb();
+        auto&& [ r, g, b ] = pnm.second.second.split_rgb();
         encoder enc(std::move(pr), std::move(r), std::move(g), std::move(b));
         const std::size_t size = enc.encode<jpezy::GRAY_MODE>(pnm.second.first.file);
         std::cout << "Output size: " << size << " srook::byte" << std::endl;

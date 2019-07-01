@@ -14,6 +14,7 @@
 #include <srook/io/bofstream.hpp>
 #include <srook/math/constants/algorithm/sqrt.hpp>
 #include <srook/mpl/constant_sequence/math/make_costable.hpp>
+#include <srook/iterator/range_access.hpp>
 #include <vector>
 
 namespace jpezy {
@@ -31,7 +32,7 @@ struct encoder {
         , DCT_data{}
         , pre_DC{}
     {
-        static_assert(rgb_size == static_cast<std::size_t>(RGB::ELEMENT_SIZE));
+        SROOK_ST_ASSERT(rgb_size == static_cast<std::size_t>(RGB::ELEMENT_SIZE));
     }
 
     template <class MODE_TAG = COLOR_MODE>
@@ -91,10 +92,10 @@ private:
         SROOK_DECLTYPE(Y_block) Crblock{}, Cbblock{};
 
         for (std::size_t i = 0; i < mcu_size; ++i) {
-            SROOK_DEDUCED_TYPENAME SROOK_DECLTYPE(Y_block)::value_type::iterator
-                yp
-                = std::begin(Y_block[i]),
-                cbp = std::begin(Cbblock[i]), crp = std::begin(Crblock[i]);
+            SROOK_DEDUCED_TYPENAME SROOK_DECLTYPE(Y_block)::value_type::iterator 
+                yp = srook::begin(Y_block[i]),
+                cbp = srook::begin(Cbblock[i]), 
+                crp = srook::begin(Crblock[i]);
 
             for (std::size_t sy = uy * (block * 2) + ((i > 1) ? block : 0), sy_t = sy + block; sy < sy_t; ++sy) {
                 const std::size_t ii = sy < pr.get<property::At::VSize>() ? sy : pr.get<property::At::VSize>() - 1;
@@ -253,10 +254,12 @@ private:
         {
             return int((0.5000 * srook::to_integer<int>(r)) - (0.4187 * srook::to_integer<int>(g)) - (0.0813 * srook::to_integer<int>(b)));
         }
-        enum { R,
+        enum { 
+            R,
             G,
             B,
-            ELEMENT_SIZE };
+            ELEMENT_SIZE 
+        };
     };
 
     const property& pr;
@@ -272,7 +275,7 @@ private:
 };
 
 template <class T>
-encoder(const property&, const std::vector<T>&, const std::vector<T>&, const std::vector<T>&)->encoder<T>;
+encoder(const property&, const std::vector<T>&, const std::vector<T>&, const std::vector<T>&) -> encoder<T>;
 
 } // namespace jpezy
 

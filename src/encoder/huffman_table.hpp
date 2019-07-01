@@ -7,13 +7,11 @@ namespace jpezy {
 
 template <class T, std::size_t s>
 struct huffmanCode_Tb {
-    using value_type = T;
+    typedef T value_type;
     explicit SROOK_CONSTEXPR huffmanCode_Tb(const srook::array<T, s>& size, const srook::array<T, s>& code)
         : size_tb(size)
         , code_tb(code)
-    {
-    }
-
+    {}
     const srook::array<T, s>& size_tb;
     const srook::array<T, s>& code_tb;
 
@@ -25,7 +23,7 @@ explicit huffmanCode_Tb(const srook::array<T, s>&, const srook::array<T, s>&) ->
 // ISO/IEC 10918-1:1993(E)
 
 // Table K.3  - Table for luminance DC coefficient differences
-using YCDc_type = srook::array<int, 12>;
+typedef srook::array<int, 12> YCDc_type;
 static SROOK_CONSTEXPR_OR_CONST YCDc_type YDcSizeT{
     0x0002, 0x0003, 0x0003, 0x0003,
     0x0003, 0x0003, 0x0004, 0x0005,
@@ -52,8 +50,7 @@ static SROOK_CONSTEXPR_OR_CONST YCDc_type CDcCodeT{
 static const huffmanCode_Tb CDcHuffmanT{ CDcSizeT, CDcCodeT };
 
 // Table K.5 - Table for luminance AC coefficient(sheet 1 - 4)
-using YCAc_type = srook::array<int, 162>;
-
+typedef srook::array<int, 162> YCAc_type;
 static SROOK_CONSTEXPR_OR_CONST YCAc_type YAcSizeT{
     4, 2, 2, 3, 4, 5, 7, 8,
     10, 16, 16, 4, 5, 7, 9, 11,
@@ -202,7 +199,7 @@ static SROOK_CONSTEXPR_OR_CONST int CZRLidx = 151;
 static SROOK_CONSTEXPR_OR_CONST int DcDhtLength = 0x21;
 static SROOK_CONSTEXPR_OR_CONST int AcDhtLength = 0xb7;
 
-using YDCD_t = srook::array<srook::byte, 33>;
+typedef srook::array<srook::byte, 33> YDCD_t;
 using namespace srook::literals::byte_literals;
 
 static SROOK_CONSTEXPR_OR_CONST YDCD_t YDcDht{
@@ -225,8 +222,7 @@ static SROOK_CONSTEXPR_OR_CONST YDCD_t CDcDht{
     0x08_byte, 0x09_byte, 0x0a_byte, 0x0b_byte
 };
 
-using YCAc_t = srook::array<srook::byte, 183>;
-
+typedef srook::array<srook::byte, 183> YCAc_t;
 static SROOK_CONSTEXPR_OR_CONST YCAc_t YAcDht{
     0xff_byte, 0xc4_byte,
     0x00_byte, 0xb5_byte,

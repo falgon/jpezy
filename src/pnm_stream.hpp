@@ -20,14 +20,14 @@ struct pnm_stream {
         , height(h)
         , max_color(max) {}
 
-    explicit operator bool() const SROOK_NOEXCEPT_TRUE
+    explicit inline operator bool() const SROOK_NOEXCEPT_TRUE
     {
         return initializing_succeed;
     }
 
 protected:
-    using value_type = srook::byte;
-    using rgb_type = srook::byte;
+    typedef srook::byte value_type;
+    typedef srook::byte rgb_type;
 
     bool initializing_succeed;
     std::size_t width, height, max_color;
@@ -35,9 +35,7 @@ protected:
 
     inline void report_error(const char* funcName) const
     {
-        if (initializing_succeed)
-            return;
-
+        if (initializing_succeed) return;
         std::string str = "Initializing was failed: ";
         str += funcName;
         SROOK_THROW std::runtime_error(str.c_str());

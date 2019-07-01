@@ -15,8 +15,7 @@ struct jpezy_writer {
     jpezy_writer(const std::size_t buffer_size, const property& pr_, const char* output_name)
         : ofps(buffer_size, output_name, std::ios::out | std::ios::trunc | std::ios::binary)
         , pr(pr_)
-    {
-    }
+    {}
 
     void write_header()
     {

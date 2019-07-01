@@ -7,15 +7,17 @@ SROOK_DECLTYPE(EXIT_FAILURE) disp_error()
     return EXIT_FAILURE;
 }
 
-enum class Mode { JPEG,
+enum class Mode { 
+    JPEG,
     GRAY,
     PPM,
     DEBUG,
-    UD };
+    UD 
+};
 
 template <class... Modes>
 auto exec(const jpezy::encode_io& pnm, const char* ofile, Modes&&... m)
--> std::enable_if_t<std::conjunction_v<std::is_same<Mode, std::decay_t<Modes>>...> and (sizeof...(m) > 0 and sizeof...(m) < 3), void>
+-> std::enable_if_t<std::conjunction_v<std::is_same<Mode, std::decay_t<Modes>>...> && (sizeof...(m) > 0 and sizeof...(m) < 3), void>
 {
     const std::tuple<std::decay_t<Modes>...> ms{ std::forward<Modes>(m)... };
 

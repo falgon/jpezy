@@ -103,11 +103,9 @@ int main(const int argc, const char* argv[])
     if (argc > 3)
         sv3.emplace(argv[4]);
 
-    if ((sv0.find("jpeg", sv0.find_first_of('.')) != srook::string_view::npos or sv0.find("jpg", sv0.find_first_of('.')) != srook::string_view::npos) and (sv1.find("ppm", sv1.find_first_of('.')) != srook::string_view::npos)) {
-
+    if ((sv0.find("jpeg", sv0.find_first_of('.')) != srook::string_view::npos or sv0.find("jpg", sv0.find_first_of('.')) != srook::string_view::npos) && (sv1.find("ppm", sv1.find_first_of('.')) != srook::string_view::npos)) {
         c = Color::enable;
         m = Mode::Release;
-
 
         if (sv2) {
             if ((sv2.value().find("--gray") != srook::string_view::npos)) {
