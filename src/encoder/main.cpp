@@ -3,7 +3,7 @@
 
 SROOK_DECLTYPE(EXIT_FAILURE) disp_error()
 {
-    std::cerr << "Usage: jpezy_encoder <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | --debug )" << std::endl;
+    std::cerr << "Usage: jpezy_encode <input.ppm> ( <ouput.(jpeg | jpg) [OPT: --gray]> | <output.ppm> | --debug )" << std::endl;
     return EXIT_FAILURE;
 }
 

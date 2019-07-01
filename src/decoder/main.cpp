@@ -9,7 +9,7 @@
 
 SROOK_DECLTYPE(EXIT_FAILURE) disp_error() noexcept(false)
 {
-    std::cerr << "Usage: jpezy_decoder <input.(jpg | jpeg)> ( <output.ppm | [OPT: --gray]> | -v )" << std::endl;
+    std::cerr << "Usage: jpezy_decode <input.(jpg | jpeg)> ( <output.ppm | [OPT: --gray]> | -v )" << std::endl;
     return EXIT_FAILURE;
 }
 

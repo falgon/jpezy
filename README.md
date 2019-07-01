@@ -23,9 +23,9 @@ The lazy and simply JPEG encoder + JPEG decoder implementation. This project is 
 ## Limitations and specifications
 
 ### Encoder
-* Supported inputing file format is [PNM(Portable aNyMap) P3(portable pixmap format)](https://en.wikipedia.org/wiki/Netpbm_format) only. If You can use the ImageMagick, can [convert](https://www.imagemagick.org/script/convert.php) as like bellow.
+* Supported inputing file format is [PNM(Portable anymap) P3(portable pixmap format)](https://en.wikipedia.org/wiki/Netpbm_format) only. If You can use the ImageMagick, can [convert](https://www.imagemagick.org/script/convert.php) as like bellow.
 ```
-convert -compress none <input image file> <output.ppm>
+$ convert -compress none <input image file> <output.ppm>
 ```
 * Huffman codes and quantization tables are fixed (Reference: ISO/IEC 10918-1 ITU-T 81 Annex K)
 * JFIF version 1.02
@@ -36,8 +36,8 @@ convert -compress none <input image file> <output.ppm>
 
 The following is an example of the result that compressed [The Standart Test Images of Lena](http://www.ece.rice.edu/~wakin/images/).
 ```
-% convert -compress none lena512color.tiff lena.ppm
-% ./jpezy_encode lena.ppm lena.jpg
+$ convert -compress none lena512color.tiff lena.ppm
+$ ./jpezy_encode lena.ppm lena.jpg
    _
   (_)_ __   ___ _____   _
   | | '_ \ / _ \_  / | | |
@@ -55,14 +55,14 @@ Output size: 18010 byte
 Done! Processing time: 0.045(sec)
 Total processing time: 0.567
 
-% file lena.jpg
+$ file lena.jpg
 output.jpg: JPEG image data, JFIF standard 1.02, resolution (DPI), density 96x96, segment length 16, comment: "Encoded by jpezy", baseline, precision 8, 512x512, frames 3
 ```
 
 ### Decoder
 The following is an example of the result that compressed [The Standart Test Images of Lena](http://www.ece.rise.edu/~wakin/images).
 ```
-% ./jpezy_decode lena.jpg output.ppm
+$ ./jpezy_decode lena.jpg output.ppm
    _
   (_)_ __   ___ _____   _
   | | '_ \ / _ \_  / | | |
@@ -75,9 +75,9 @@ process started...
 
 Done! Processing time: 0.055(sec)
 Decoded image: Netpbm image data, size = 512 x 512, pixmap, ASCII text
-% file output.ppm
+$ file output.ppm
 output.ppm: Netpbm image data, size = 512 x 512, pixmap, ASCII text
-% ./jpezy_decode lena.jpg output.ppm -v
+$ ./jpezy_decode lena.jpg output.ppm -v
    _
   (_)_ __   ___ _____   _
   | | '_ \ / _ \_  / | | |
@@ -119,12 +119,20 @@ Decoded image: Netpbm image data, size = 512 x 512, pixmap, ASCII text
 ```
 
 ## Build
-```cpp
-% git clone https://github.com/falgon/jpezy.git
-% cd jpezy
-% mkdir build && cd build
-% cmake -DCMAKE_BUILD_TYPE=Release ..
-% make
+```sh
+$ git clone https://github.com/falgon/jpezy.git
+$ cd jpezy
+$ mkdir build && cd build
+$ cmake -DCMAKE_BUILD_TYPE=Release ..
+$ make -j$(nproc)
+```
+or with [Ninja](https://ninja-build.org/)
+```sh
+$ git clone https://github.com/falgon/jpezy.git
+$ cd jpezy
+$ mkdir build && cd build
+$ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release ..
+$ ninja
 ```
 
 ## Usage
